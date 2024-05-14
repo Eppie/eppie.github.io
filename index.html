@@ -3,16 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Static Site</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Interactive Recommendation System with Transformers.js</title>
+    <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .recommendations {
+            margin-top: 20px;
+        }
+        .recommendation-item {
+            padding: 10px;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to My Static Site</h1>
-    </header>
-    <main>
-        <button id="colorButton">Change Background Color</button>
-    </main>
-    <script src="script.js"></script>
+    <div class="container">
+        <h1>Interactive Recommendation System</h1>
+        <div class="form-group">
+            <label for="user-input">Enter your favorite items (comma separated):</label>
+            <input type="text" id="user-input" placeholder="e.g., Inception, The Matrix, Interstellar">
+        </div>
+        <button onclick="generateRecommendations()">Get Recommendations</button>
+        
+        <div class="recommendations" id="recommendations">
+            <!-- Recommendations will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        async function loadModel() {
+            // Load a pre-trained model from Hugging Face using Transformers.js
+            const model = await transformers.load('bert-base-uncased');
+            return model;
+        }
+
+        async function generateRecommendations() {
+            const userInput = document.getElementById('user-input').value;
+            const recommendationsDiv = document.getElementById('recommendations');
+            recommendationsDiv.innerHTML = ''; // Clear previous recommendations
+
+            if (userInput.trim() === '') {
+                alert('Please enter some favorite items.');
+                return;
+            }
+
+            // Load the model
+            const model = await loadModel();
+
+            // Process user input and generate recommendations
+            const inputs = userInput.split(',').map(item => item.trim());
+            const inputIds = inputs.map(input => model.tokenizer.encode(input));
+
+            // Generate embeddings for inputs
+            const inputEmbeddings = inputIds.map(ids => model.forward({ input_ids: new transformers.Tensor(ids) }));
+
+            // Mock recommendations (replace with your recommendation logic)
+            const recommendations = ['The Prestige', 'Blade Runner 2049', 'Arrival'];
+
+            // Display recommendations
+            recommendations.forEach(item => {
+                const recommendationItem = document.createElement('div');
+                recommendationItem.className = 'recommendation-item';
+                recommendationItem.innerHTML = `<strong>${item}</strong>`;
+                recommendationsDiv.appendChild(recommendationItem);
+            });
+        }
+    </script>
 </body>
 </html>
