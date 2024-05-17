@@ -1,0 +1,35 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+header {
+  background-color: #333;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+footer {
+  background-color: #333;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  bottom: 0;
+  width: 100%;
+}
+
+.color1 {
+  background-color: lightblue;
+}
+
+.color2 {
+  background-color: lightgreen;
+}
+
+.color3 {
+  background-color: lightcoral;
+}
+
+.color4 {
+  background-color: lightyellow;
+}
