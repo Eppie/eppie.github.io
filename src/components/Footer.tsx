@@ -1,20 +1,30 @@
 import React from 'react';
 import './Footer.css';
-import {Link} from "react-router-dom"; // Make sure to create and import a CSS file for styling
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
-    <footer className="footer">
-      <div className="container">
-        <p><Link to="/">© 2024 Andrew Epstein</Link></p>
-        <ul className="social-links">
+    <footer className='footer'>
+      <div className='container'>
+        <p>
+          <Link to='/'>© 2024 Andrew Epstein</Link>
+        </p>
+        <ul className='social-links'>
           <li>
-            <a href='https://www.linkedin.com/in/andrew-epstein/' target="_blank" rel="noopener noreferrer">
+            <a
+              href='https://www.linkedin.com/in/andrew-epstein/'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
               LinkedIn
             </a>
           </li>
           <li>
-            <a href='https://github.com/Eppie' target="_blank" rel="noopener noreferrer">
+            <a
+              href='https://github.com/Eppie'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
               GitHub
             </a>
           </li>
@@ -22,6 +32,6 @@ const Footer = () => {
       </div>
     </footer>
   );
-}
+};
 
 export default Footer;
