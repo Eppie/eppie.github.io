@@ -11,3 +11,49 @@ a {
 a:hover {
   color: #ffdd57;
 }
+.digit-container {
+  perspective: 100px;
+  display: inline-block;
+  margin: 1px;
+}
+
+.digit {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  border: 1px solid black;
+  position: relative;
+  transition: background-color 0.5s;
+}
+
+.flap {
+  animation: flapAnimation 1s ease-in-out;
+}
+
+@keyframes flapAnimation {
+  0% {
+    transform: rotateX(0deg);
+  }
+  50% {
+    transform: rotateX(90deg);
+    opacity: 0;
+  }
+  51% {
+    opacity: 0;
+  }
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+/* App.css */
+.app-container {
+    transition: transform 0.5s ease;
+}
+
+.app-container.flipped {
+    transform: rotate(180deg);
+}
