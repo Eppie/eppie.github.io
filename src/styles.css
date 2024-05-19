@@ -51,9 +51,9 @@ a:hover {
 
 /* App.css */
 .app-container {
-    transition: transform 0.5s ease;
+  transition: transform 0.5s ease;
 }
 
 .app-container.flipped {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }

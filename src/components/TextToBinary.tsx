@@ -39,7 +39,6 @@ interface HighlightBinaryDigitsProps {
   colorMap: { [key: number]: string };
 }
 
-
 const HighlightBinaryDigits: React.FC<HighlightBinaryDigitsProps> = ({
   binaryDigits,
   colorMap,
@@ -66,7 +65,7 @@ const HighlightBinaryDigits: React.FC<HighlightBinaryDigitsProps> = ({
     const timer = setTimeout(() => setChangedIndices([]), 1000); // Match the duration of your CSS animation
 
     return () => clearTimeout(timer);
-  }, [binaryDigits, previousDigits]);
+  }, [binaryDigits]);
 
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -75,7 +74,7 @@ const HighlightBinaryDigits: React.FC<HighlightBinaryDigitsProps> = ({
           {index % 8 === 0 && index !== 0 && (
             <span style={{ padding: '0 10px' }}>|</span>
           )}
-          <div className="digit-container">
+          <div className='digit-container'>
             <span
               className={`digit ${changedIndices.includes(index) ? 'flap' : ''}`}
               style={{
