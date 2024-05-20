@@ -9,12 +9,16 @@ interface AppState {
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
-export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AppProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
 
   return (
-    <AppContext.Provider value={{ isFlipped, showConfetti, setIsFlipped, setShowConfetti }}>
+    <AppContext.Provider
+      value={{ isFlipped, showConfetti, setIsFlipped, setShowConfetti }}
+    >
       {children}
     </AppContext.Provider>
   );
