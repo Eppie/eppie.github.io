@@ -140,7 +140,7 @@ function binaryOr(str1: string, str2: string): string {
   return result;
 }
 
-const TextToBinary = () => {
+const Complement = () => {
   const [text, setText] = useState('ACTG');
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -339,4 +339,4 @@ const TextToBinary = () => {
   );
 };
 
-export default TextToBinary;
+export default Complement;

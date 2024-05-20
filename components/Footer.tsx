@@ -1,13 +1,12 @@
 import React from 'react';
-import './Footer.css';
-import { Link } from 'react-router-dom';
+import Link from "next/link";
 
 const Footer = () => {
   return (
     <footer className='footer'>
       <div className='container'>
         <p>
-          <Link to='/'>© 2024 Andrew Epstein</Link>
+          <Link href='/'>© 2024 Andrew Epstein</Link>
         </p>
         <ul className='social-links'>
           <li>
