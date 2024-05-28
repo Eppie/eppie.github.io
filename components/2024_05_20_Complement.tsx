@@ -205,7 +205,7 @@ const Complement = () => {
       <h1>Fast DNA Complement Function</h1>
       <p>
         In the course of manipulating genomic data, it is often desirable to
-        compute the "complement" of a given sequence.
+        compute the &quot;complement&quot; of a given sequence.
       </p>
       <h3>Naive approach:</h3>
       <SyntaxHighlighter language='cpp' style={darcula}>
@@ -215,7 +215,7 @@ const Complement = () => {
       <SyntaxHighlighter language='cpp' style={darcula}>
         {codeString2}
       </SyntaxHighlighter>
-      <p>And here's how the `toIndex` function works:</p>
+      <p>And here&apos;s how the `toIndex` function works:</p>
       <input
         type='text'
         value={text}

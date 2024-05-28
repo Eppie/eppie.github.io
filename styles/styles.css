@@ -1,5 +1,17 @@
+html,
 body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
   font-family: Arial, sans-serif;
+}
+
+.main-content {
+  flex: 1;
 }
 
 a {
@@ -49,7 +61,6 @@ a:hover {
   }
 }
 
-/* App.css */
 .app-container {
   transition: transform 0.5s ease;
 }

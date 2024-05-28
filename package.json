@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/react-dom": "^18.3.0",
+    "@mlc-ai/web-llm": "^0.2.38",
     "next": "^14.2.3",
     "next-transpile-modules": "^10.0.1",
     "react": "^18.3.1",
@@ -16,13 +16,16 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d out"
+    "export": "next export",
+    "deploy": "next build && next export && gh-pages -d out",
+    "predeploy": "rm -rf out && npm run build && npm run export"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
+      "react-app/jest",
+      "next",
+      "next/core-web-vitals"
     ]
   },
   "browserslist": {
@@ -41,9 +44,12 @@
     "@types/node": "^20.12.12",
     "@types/react": "^18.3.2",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.3",
+    "eslint-config-react-app": "^7.0.1",
     "gh-pages": "^6.1.1",
-    "prettier": "^3.2.5",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "webpack-bundle-analyzer": "^4.10.2"
   },
   "homepage": "https://eppie.github.io/eppie.github.io"
 }
