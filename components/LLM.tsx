@@ -6,7 +6,7 @@ import {
   InitProgressReport,
   MLCEngineInterface,
 } from '@mlc-ai/web-llm';
-
+import styles from '../styles/LLM.module.css';
 interface Props {
   defaultCharacter1?: string;
   defaultCharacter2?: string;
@@ -24,7 +24,6 @@ const LLM: React.FC<Props> = ({
   const [responseModerator, setResponseModerator] = useState<string>('');
   const [initLabel, setInitLabel] = useState<string>('');
   const [temperature, setTemperature] = useState<number>(0.8);
-  const [maxGenLen, setMaxGenLen] = useState<number>(128);
   const engineRef = useRef<MLCEngineInterface | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [character1, setCharacter1] = useState<string>(defaultCharacter1);
@@ -38,10 +37,6 @@ const LLM: React.FC<Props> = ({
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setTemperature(parseFloat(event.target.value));
-  };
-
-  const handleMaxGenLen = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMaxGenLen(parseFloat(event.target.value));
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -87,7 +82,6 @@ const LLM: React.FC<Props> = ({
       stream: true,
       messages: messages,
       temperature: temperature,
-      max_gen_len: maxGenLen,
     };
 
     const asyncChunkGenerator =
@@ -188,7 +182,7 @@ const LLM: React.FC<Props> = ({
   }, []);
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+    <div className={styles.div1}>
       <label id='init-label'>{initLabel}</label>
       <h3>Prompt</h3>
       <input
@@ -213,18 +207,6 @@ const LLM: React.FC<Props> = ({
           step='0.01'
           value={temperature}
           onChange={handleTemperatureChange}
-          style={{ width: '100%', marginTop: '10px' }}
-        />
-      </div>
-      <div style={{ marginBottom: '20px' }}>
-        <label>Max Gen. Length: {maxGenLen}</label>
-        <input
-          type='range'
-          min='10'
-          max='500'
-          step='1'
-          value={maxGenLen}
-          onChange={handleMaxGenLen}
           style={{ width: '100%', marginTop: '10px' }}
         />
       </div>

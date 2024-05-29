@@ -6,9 +6,7 @@ import Footer from '../components/Footer';
 const AboutPage: React.FC = () => {
   return (
     <div>
-      <Header />
       <About />
-      <Footer />
     </div>
   );
 };

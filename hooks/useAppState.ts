@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useKonamiCode } from '../components/Konami';
 
 export const useAppState = () => {

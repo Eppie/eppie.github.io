@@ -1,7 +1,7 @@
 import React, { Fragment, useState, ChangeEvent, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import styles from '../styles/Complement.module.css'
+import styles from '../styles/Complement.module.css';
 
 function stringToBinary(inputString: string): string {
   if (inputString.length > 4) {
@@ -68,7 +68,7 @@ const HighlightBinaryDigits: React.FC<HighlightBinaryDigitsProps> = ({
     return () => clearTimeout(timer);
   }, [binaryDigits]);
 
-return (
+  return (
     <div className={styles.container}>
       {digitArray.map((digit, index) => (
         <Fragment key={index}>
@@ -92,7 +92,6 @@ return (
     </div>
   );
 };
-
 
 function binaryAnd(str1: string, str2: string): string {
   // Ensure both strings are of the same length
@@ -204,128 +203,131 @@ const Complement = () => {
     }`;
 
   return (
-      <div style={{padding: '20px'}}>
-          <h1>Fast DNA Complement Function</h1>
-          <p>
-              In the course of manipulating genomic data, it is often desirable to
-              compute the &quot;complement&quot; of a given sequence.
-          </p>
-          <h3>Naive approach:</h3>
-          <SyntaxHighlighter language='cpp' style={darcula}>
-              {codeString}
-          </SyntaxHighlighter>
-          <h3>This approach:</h3>
-          <SyntaxHighlighter language='cpp' style={darcula}>
-              {codeString2}
-          </SyntaxHighlighter>
-          <p>And here&apos;s how the `toIndex` function works:</p>
-          <input
-              className={styles.input}
-              type='text'
-              value={text}
-              onChange={handleChange}
-              placeholder='Enter text here'
+    <div style={{ padding: '20px' }}>
+      <h1>Fast DNA Complement Function</h1>
+      <p>
+        In the course of manipulating genomic data, it is often desirable to
+        compute the &quot;complement&quot; of a given sequence.
+      </p>
+      <h3>Naive approach:</h3>
+      <SyntaxHighlighter language='cpp' style={darcula}>
+        {codeString}
+      </SyntaxHighlighter>
+      <h3>This approach:</h3>
+      <SyntaxHighlighter language='cpp' style={darcula}>
+        {codeString2}
+      </SyntaxHighlighter>
+      <p>And here&apos;s how the `toIndex` function works:</p>
+      <input
+        className={styles.input}
+        type='text'
+        value={text}
+        onChange={handleChange}
+        placeholder='Enter text here'
+      />
+      <span>
+        {' '}
+        ← DNA sequence to complement (up to 4 characters, only ACTG allowed)
+      </span>
+      <div className={styles['digit-box']}>
+        <div>
+          Input:
+          <HighlightBinaryDigits
+            binaryDigits={convertToBinary(text)}
+            colorMap={{
+              5: color1,
+              6: color1,
+              13: color2,
+              14: color2,
+              21: color3,
+              22: color3,
+              29: color4,
+              30: color4,
+            }}
           />
-          <span>  ← DNA sequence to complement (up to 4 characters, only ACTG allowed)</span>
-          <div className={styles['digit-box']}>
-              <div>
-                  Input:
-                  <HighlightBinaryDigits
-                      binaryDigits={convertToBinary(text)}
-                      colorMap={{
-                          5: color1,
-                          6: color1,
-                          13: color2,
-                          14: color2,
-                          21: color3,
-                          22: color3,
-                          29: color4,
-                          30: color4,
-                      }}
-                  />
-              </div>
-              <div>
-                  Mask:
-                  <HighlightBinaryDigits
-                      binaryDigits={mask}
-                      colorMap={{
-                          5: color1,
-                          6: color1,
-                          13: color2,
-                          14: color2,
-                          21: color3,
-                          22: color3,
-                          29: color4,
-                          30: color4,
-                      }}
-                  />
-              </div>
-              <div>
-                  x1 = input & mask:
-                  <HighlightBinaryDigits
-                      binaryDigits={x1}
-                      colorMap={{
-                          5: color1,
-                          6: color1,
-                          13: color2,
-                          14: color2,
-                          21: color3,
-                          22: color3,
-                          29: color4,
-                          30: color4,
-                      }}
-                  />
-              </div>
-              <div>
-                  x2 = x1 {'>>'} 1:
-                  <HighlightBinaryDigits
-                      binaryDigits={x2}
-                      colorMap={{
-                          6: color1,
-                          7: color1,
-                          14: color2,
-                          15: color2,
-                          22: color3,
-                          23: color3,
-                          30: color4,
-                          31: color4,
-                      }}
-                  />
-              </div>
-              <div>
-                  x3 = x2 | (x2 {'>>'} 14):
-                  <HighlightBinaryDigits
-                      binaryDigits={x3}
-                      colorMap={{
-                          20: color1,
-                          21: color1,
-                          22: color2,
-                          23: color2,
-                          28: color3,
-                          29: color3,
-                          30: color4,
-                          31: color4,
-                      }}
-                  />
-              </div>
-              <div>
-                  x4 = x3 | (x3 {'>>'} 4):
-                  <HighlightBinaryDigits
-                      binaryDigits={x4}
-                      colorMap={{
-                          24: color1,
-                          25: color1,
-                          26: color2,
-                          27: color2,
-                          28: color3,
-                          29: color3,
-                          30: color4,
-                          31: color4,
-                      }}
-                  />
-              </div>
-          </div>
+        </div>
+        <div>
+          Mask:
+          <HighlightBinaryDigits
+            binaryDigits={mask}
+            colorMap={{
+              5: color1,
+              6: color1,
+              13: color2,
+              14: color2,
+              21: color3,
+              22: color3,
+              29: color4,
+              30: color4,
+            }}
+          />
+        </div>
+        <div>
+          x1 = input & mask:
+          <HighlightBinaryDigits
+            binaryDigits={x1}
+            colorMap={{
+              5: color1,
+              6: color1,
+              13: color2,
+              14: color2,
+              21: color3,
+              22: color3,
+              29: color4,
+              30: color4,
+            }}
+          />
+        </div>
+        <div>
+          x2 = x1 {'>>'} 1:
+          <HighlightBinaryDigits
+            binaryDigits={x2}
+            colorMap={{
+              6: color1,
+              7: color1,
+              14: color2,
+              15: color2,
+              22: color3,
+              23: color3,
+              30: color4,
+              31: color4,
+            }}
+          />
+        </div>
+        <div>
+          x3 = x2 | (x2 {'>>'} 14):
+          <HighlightBinaryDigits
+            binaryDigits={x3}
+            colorMap={{
+              20: color1,
+              21: color1,
+              22: color2,
+              23: color2,
+              28: color3,
+              29: color3,
+              30: color4,
+              31: color4,
+            }}
+          />
+        </div>
+        <div>
+          x4 = x3 | (x3 {'>>'} 4):
+          <HighlightBinaryDigits
+            binaryDigits={x4}
+            colorMap={{
+              24: color1,
+              25: color1,
+              26: color2,
+              27: color2,
+              28: color3,
+              29: color3,
+              30: color4,
+              31: color4,
+            }}
+          />
+        </div>
       </div>
+    </div>
   );
 };
 
