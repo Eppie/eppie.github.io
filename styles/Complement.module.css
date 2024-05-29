@@ -1,0 +1,62 @@
+.container {
+  display: flex;
+  align-items: center;
+}
+
+.separator {
+  padding: 0 10px;
+}
+
+.digit-container {
+  perspective: 100px;
+  display: inline-block;
+  margin: 1px;
+}
+
+.digit {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  border: 1px solid black;
+  position: relative;
+  transition: background-color 0.5s;
+}
+
+.flap {
+  animation: flapAnimation 1s ease-in-out;
+}
+
+@keyframes flapAnimation {
+  0% {
+    transform: rotateX(0deg);
+  }
+  50% {
+    transform: rotateX(90deg);
+    opacity: 0;
+  }
+  51% {
+    opacity: 0;
+  }
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+.digit-box {
+  margin-top: 20px;
+  font-size: 18px;
+  border: 1px solid black;
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.input {
+  padding: 10px;
+  font-size: 16px;
+  width: 5%;
+  box-sizing: border-box;
+}
