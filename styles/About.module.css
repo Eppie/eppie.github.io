@@ -1,0 +1,26 @@
+.aboutPage {
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+.aboutPage h2 {
+  font-size: 1.8em;
+  color: #222;
+  margin-top: 1.5em;
+}
+
+.aboutPage p {
+  font-size: 1em;
+  margin: 1em 0;
+}
+
+.aboutPage ul {
+  list-style-type: square;
+  margin: 1em 0;
+  padding-left: 1.2em;
+}
+
+.aboutPage li {
+  margin: 0.5em 0;
+}

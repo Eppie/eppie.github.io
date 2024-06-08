@@ -10,7 +10,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     <AppProvider>
       <Header />
       <main>
-        <Component {...pageProps} />
+        <div className='container'>
+          <Component {...pageProps} />
+        </div>
       </main>
       <Footer />
     </AppProvider>

@@ -19,15 +19,15 @@ const LLM: React.FC<Props> = ({
   const [prompt, setPrompt] = useState<string>(
     'Scully, we have a new case. In the last 10 months, across 10 different states. 10 different people were killed. Each of them was exactly 10,000 days old at the time of their murder.'
   );
-  const [responseAI1, setResponseAI1] = useState<string>('');
-  const [responseAI2, setResponseAI2] = useState<string>('');
-  const [responseModerator, setResponseModerator] = useState<string>('');
-  const [initLabel, setInitLabel] = useState<string>('');
+  const [responses, setResponses] = useState<string[]>([]);
+  const [currentResponse, setCurrentResponse] = useState<string>('');
   const [temperature, setTemperature] = useState<number>(0.8);
+  const [progress, setProgress] = useState<number>(0);
   const engineRef = useRef<MLCEngineInterface | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [character1, setCharacter1] = useState<string>(defaultCharacter1);
   const [character2, setCharacter2] = useState<string>(defaultCharacter2);
+  const [isEngineLoaded, setIsEngineLoaded] = useState<boolean>(false);
 
   const handlePromptChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPrompt(event.target.value);
@@ -43,6 +43,10 @@ const LLM: React.FC<Props> = ({
     if (event.key === 'Enter') {
       buttonRef.current?.click();
     }
+  };
+
+  const appendResponse = (newResponse: string) => {
+    setResponses((prevResponses) => [...prevResponses, newResponse]);
   };
 
   const AI_1 = 'AI_1';
@@ -64,14 +68,13 @@ const LLM: React.FC<Props> = ({
     [AI_3]: [
       {
         role: 'system',
-        content: `You are a moderator between two roleplayers that are engaging in a discussion. They are roleplaying as ${character1} and ${character2}. After each one of them has spoken, you will have a turn to interject. Keep your responses short. Your goal is to move the story along and stop them from getting into a discussion loop. Be creative, introduce new events to the story!`,
+        content: `You are a moderator between two roleplayers that are engaging in a discussion. They are roleplaying as ${character1} and ${character2}. After each one of them has spoken, you will have a turn to interject. Keep your responses short. Your goal is to move the story along. Be creative, introduce new events to the story!`,
       },
     ],
   };
 
   const getOneMessage = async (
-    messages: ChatCompletionMessageParam[],
-    setResponse: React.Dispatch<React.SetStateAction<string>>
+    messages: ChatCompletionMessageParam[]
   ): Promise<string> => {
     if (!engineRef.current) {
       console.error('Engine not initialized');
@@ -91,9 +94,11 @@ const LLM: React.FC<Props> = ({
     for await (const chunk of asyncChunkGenerator) {
       if (chunk.choices[0].delta.content) {
         reply += chunk.choices[0].delta.content;
+        setCurrentResponse(reply);
       }
-      setResponse(reply);
     }
+
+    appendResponse(reply);
 
     return await engineRef.current.getMessage();
   };
@@ -108,15 +113,15 @@ const LLM: React.FC<Props> = ({
         return;
       }
 
-      messageDict[AI_1].push({ role: 'user', content: prompt });
+      messageDict[AI_1].push({
+        role: 'user',
+        content: `${character2}: ${prompt}`,
+      });
 
       for (let i = 0; i < 3; i++) {
         // AI1 talks
         console.log('Getting message from AI1:');
-        const messageFromAI1 = await getOneMessage(
-          messageDict[AI_1],
-          setResponseAI1
-        );
+        const messageFromAI1 = await getOneMessage(messageDict[AI_1]);
         console.log('Message from AI1: ' + messageFromAI1);
         messageDict[AI_1].push({
           role: 'assistant',
@@ -126,10 +131,7 @@ const LLM: React.FC<Props> = ({
 
         // AI2 talks
         console.log('Getting message from AI2:');
-        const messageFromAI2 = await getOneMessage(
-          messageDict[AI_2],
-          setResponseAI2
-        );
+        const messageFromAI2 = await getOneMessage(messageDict[AI_2]);
         console.log('Message from AI2: ' + messageFromAI2);
         messageDict[AI_1].push({ role: 'user', content: messageFromAI2 });
         messageDict[AI_2].push({
@@ -139,15 +141,12 @@ const LLM: React.FC<Props> = ({
 
         messageDict[AI_3].push({
           role: 'user',
-          content: `${character1}: "${messageFromAI1}"\n\n ${character2}: "${messageFromAI2}"`,
+          content: `${character1}: "${messageFromAI1}"\n\n${character2}: "${messageFromAI2}\n\nModerator:"`,
         });
 
         // Moderator talks
         console.log('Getting message from Moderator:');
-        const messageFromModerator = await getOneMessage(
-          messageDict[AI_3],
-          setResponseModerator
-        );
+        const messageFromModerator = await getOneMessage(messageDict[AI_3]);
         console.log('Message from Moderator: ' + messageFromModerator);
         messageDict[AI_1].push({ role: 'user', content: messageFromModerator });
         messageDict[AI_2].push({ role: 'user', content: messageFromModerator });
@@ -162,10 +161,23 @@ const LLM: React.FC<Props> = ({
     }
   };
 
+  function updateProgressBar(text: string): void {
+    const match = text.match(/(\d+)\/(\d+)/);
+    if (match) {
+      const loaded = parseInt(match[1], 10);
+      const total = parseInt(match[2], 10);
+      const percentage = (loaded / total) * 100;
+
+      setProgress(percentage);
+    } else {
+      console.error('Text format is incorrect.');
+    }
+  }
+
   useEffect(() => {
     const initEngine = async () => {
       const initProgressCallback = (report: InitProgressReport) => {
-        setInitLabel(report.text);
+        updateProgressBar(report.text);
       };
 
       try {
@@ -173,6 +185,7 @@ const LLM: React.FC<Props> = ({
         engineRef.current = await CreateMLCEngine(selectedModel, {
           initProgressCallback,
         });
+        setIsEngineLoaded(true);
       } catch (error) {
         console.error('Failed to initialize engine:', error);
       }
@@ -181,16 +194,33 @@ const LLM: React.FC<Props> = ({
     initEngine();
   }, []);
 
+  const getColorClass = (index: number) => {
+    switch (index % 3) {
+      case 0:
+        return `${styles.color1} ${styles.messageBubble}`;
+      case 1:
+        return `${styles.color2} ${styles.messageBubble}`;
+      case 2:
+        return `${styles.color3} ${styles.messageBubble}`;
+      default:
+        return '';
+    }
+  };
+
   return (
-    <div className={styles.div1}>
-      <label id='init-label'>{initLabel}</label>
+    <div className={styles.outer}>
+      <progress
+        id='progressBar'
+        className={styles.progressBar}
+        value={progress}
+        max='100'
+      ></progress>
       <h3>Prompt</h3>
       <input
         type='text'
         value={prompt}
         onChange={handlePromptChange}
         onKeyDown={handleKeyPress}
-        placeholder='Type your prompt here'
         style={{
           width: '100%',
           padding: '10px',
@@ -198,6 +228,12 @@ const LLM: React.FC<Props> = ({
           fontSize: '16px',
         }}
       />
+      <p>
+        The `temperature` slider controls how creative or predictable the AI’s
+        responses are. Lower values (closer to 0) make the AI more focused and
+        consistent, while higher values (closer to 1.5) make the responses more
+        diverse and imaginative.
+      </p>
       <div style={{ marginBottom: '20px' }}>
         <label>Temperature: {temperature}</label>
         <input
@@ -207,10 +243,10 @@ const LLM: React.FC<Props> = ({
           step='0.01'
           value={temperature}
           onChange={handleTemperatureChange}
-          style={{ width: '100%', marginTop: '10px' }}
+          style={{ width: '50%', marginTop: '10px' }}
         />
       </div>
-      <div>
+      <div className={styles.formRow}>
         <label>
           Character 1:
           <input
@@ -219,8 +255,6 @@ const LLM: React.FC<Props> = ({
             onChange={(e) => setCharacter1(e.target.value)}
           />
         </label>
-      </div>
-      <div>
         <label>
           Character 2:
           <input
@@ -233,38 +267,21 @@ const LLM: React.FC<Props> = ({
       <button
         ref={buttonRef}
         onClick={handleButtonClick}
-        disabled={!character1 || !character2}
-        style={{
-          padding: '10px 20px',
-          fontSize: '16px',
-          backgroundColor: !character1 || !character2 ? '#A9A9A9' : '#007BFF',
-          color: '#FFF',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: !character1 || !character2 ? 'not-allowed' : 'pointer',
-          opacity: !character1 || !character2 ? 0.6 : 1,
-        }}
+        disabled={!isEngineLoaded || !character1 || !character2}
+        className={`${styles.button} ${!isEngineLoaded || !character1 || !character2 ? styles.disabled : ''}`}
       >
         Start Conversation
       </button>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: '30px',
-        }}
-      >
-        <div style={{ flex: '1', marginRight: '10px' }}>
-          <h3>Response from {character1}</h3>
-          <label id='response-ai1'>{responseAI1}</label>
-        </div>
-        <div style={{ flex: '1', marginRight: '10px' }}>
-          <h3>Response from {character2}</h3>
-          <label id='response-ai2'>{responseAI2}</label>
-        </div>
-        <div style={{ flex: '1' }}>
-          <h3>Response from Moderator</h3>
-          <label id='response-moderator'>{responseModerator}</label>
+      <h3>Current response:</h3>
+      <div>{currentResponse}</div>
+      <div style={{ marginTop: '30px' }}>
+        <h3>Conversation History</h3>
+        <div id='conversation-history'>
+          {responses.map((response, index) => (
+            <div key={index} className={getColorClass(index)}>
+              {response}
+            </div>
+          ))}
         </div>
       </div>
     </div>

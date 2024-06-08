@@ -1,10 +1,24 @@
 import React from 'react';
-import Complement from '../components/2024_05_20_Complement';
+import Link from 'next/link';
 
 const ProjectsPage: React.FC = () => {
   return (
     <div>
-      <Complement />
+      <p>
+        <Link href='/complement'>DNA Complement (WIP)</Link>
+      </p>
+      <p>
+        <Link href='/llm_roleplay'>LLM Roleplay (WIP)</Link>
+      </p>
+      <p>
+        <Link href='/sd_lora'>Stable Diffusion Fine-Tuning (coming soon)</Link>
+      </p>
+      <p>
+        <Link href='/compression'>Compression (coming soon)</Link>
+      </p>
+      <p>
+        <Link href='/llm_bias'>LLM Bias (coming soon)</Link>
+      </p>
     </div>
   );
 };
