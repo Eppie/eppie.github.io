@@ -62,8 +62,7 @@ const HighlightBinaryDigits: React.FC<HighlightBinaryDigitsProps> = ({
     setChangedIndices(changes);
     setPreviousDigits(newDigitArray);
 
-    // Remove the animation class after the animation is done
-    const timer = setTimeout(() => setChangedIndices([]), 1000); // Match the duration of your CSS animation
+    const timer = setTimeout(() => setChangedIndices([]), 250);
 
     return () => clearTimeout(timer);
   }, [binaryDigits]);
@@ -162,45 +161,75 @@ const Complement = () => {
   const x3: string = binaryOr(bitShiftRight(x2, 14), x2);
   const x4: string = binaryOr(bitShiftRight(x3, 4), x3);
   const codeString: string = `void dnaComplement(char *inputDNA, int length) {
-        for (int i = 0; i < length; ++i) {
-            switch (inputDNA[i]) {
-            case 'A':
-                inputDNA[i] = 'T';
-                break;
-            case 'T':
-                inputDNA[i] = 'A';
-                break;
-            case 'C':
-                inputDNA[i] = 'G';
-                break;
-            case 'G':
-                inputDNA[i] = 'C';
-                break;
-            default:
-                break;
-            }
+    for (int i = 0; i < length; ++i) {
+        switch (inputDNA[i]) {
+        case 'A':
+            inputDNA[i] = 'T';
+            break;
+        case 'T':
+            inputDNA[i] = 'A';
+            break;
+        case 'C':
+            inputDNA[i] = 'G';
+            break;
+        case 'G':
+            inputDNA[i] = 'C';
+            break;
+        default:
+            break;
         }
-    }`;
+    }
+}`;
   const codeString2: string = `static const char *arr[256] = {
         "TTTT", /* omitted for brevity */ "CCCC"};
         
-    uint8_t toIndex(uint32_t input) {
-        const uint32_t MASK = 0x06060606;
-        auto x1 = input & MASK;
-        auto x2 = x1 >> 1;
-        auto x3 = x2 | (x2 >> 14);
-        auto x4 = x3 | (x3 >> 4);
-        return x4;
-    }
+uint8_t toIndex(uint32_t input) {
+    const uint32_t MASK = 0x06060606;
+    auto x1 = input & MASK;
+    auto x2 = x1 >> 1;
+    auto x3 = x2 | (x2 >> 14);
+    auto x4 = x3 | (x3 >> 4);
+    return x4;
+}
     
-    __attribute__((noinline)) void dnaComplement(char *inputDNA, int length) {
-        for (int i = 0; i < length; i += 4) {
-            uint32_t input = *(uint32_t *)(inputDNA + i);
-            uint8_t index = toIndex(input);
-            const char *complement = arr[index];
-            *(uint32_t *)(inputDNA + i) = *(uint32_t *)complement;
-        }
-    }`;
+__attribute__((noinline)) void dnaComplement(char *inputDNA, int length) {
+    for (int i = 0; i < length; i += 4) {
+        uint32_t input = *(uint32_t *)(inputDNA + i);
+        uint8_t index = toIndex(input);
+        const char *complement = arr[index];
+        *(uint32_t *)(inputDNA + i) = *(uint32_t *)complement;
+    }
+}`;
+
+  const codeString3: string = `void dnaComplement(char *inputDNA, int length) {
+    // Create a vector for each of the possible input characters
+    uint8x16_t A = vdupq_n_u8('A');
+    uint8x16_t C = vdupq_n_u8('C');
+    uint8x16_t T = vdupq_n_u8('T');
+    uint8x16_t G = vdupq_n_u8('G');
+
+    // Process the input DNA sequence in chunks of 16 bytes (128 bits) at a time.
+    // Handling of inputs that don't divide evenly by 128 bits is not shown.
+    for (int i = 0; i < length; i += 16) {
+        // Load 16 bytes of the input DNA sequence into a NEON register.
+        uint8x16_t input_vec = vld1q_u8(reinterpret_cast<const uint8_t*>(inputDNA + i));
+
+        // Create masks that identify the positions of each nucleotide in the input vector.
+        uint8x16_t mask_A = vceqq_u8(input_vec, A);
+        uint8x16_t mask_C = vceqq_u8(input_vec, C);
+        uint8x16_t mask_G = vceqq_u8(input_vec, T);
+        uint8x16_t mask_T = vceqq_u8(input_vec, G);
+
+        // Use the masks to select the appropriate complement for each nucleotide.
+        uint8x16_t result = vbslq_u8(mask_A, T,
+            vbslq_u8(mask_C, G,
+            vbslq_u8(mask_G, C,
+            vbslq_u8(mask_T, A, input_vec))));
+
+        // Store the result back into the input DNA sequence.
+        vst1q_u8(reinterpret_cast<uint8_t*>(inputDNA + i), result);
+    }
+}`;
 
   return (
     <div style={{ padding: '20px' }}>
@@ -213,6 +242,10 @@ const Complement = () => {
       <SyntaxHighlighter language='cpp' style={darcula}>
         {codeString}
       </SyntaxHighlighter>
+      <p>
+        Can we do better? It is often desirable to process multiple input
+        characters simultaneously in order to obtain a speedup.
+      </p>
       <h3>This approach:</h3>
       <SyntaxHighlighter language='cpp' style={darcula}>
         {codeString2}
@@ -327,6 +360,36 @@ const Complement = () => {
           />
         </div>
       </div>
+      <p>Here is the fastest approach I have found, using NEON instructions:</p>
+      <SyntaxHighlighter language='cpp' style={darcula}>
+        {codeString3}
+      </SyntaxHighlighter>
+      <p>
+        <b>vdupq_n_u8</b>: Creates a 128-bit vector with all 16 elements set to
+        the specified 8-bit value.
+      </p>
+      <p>
+        <b>vld1q_u8</b>: Loads 16 unsigned 8-bit integers from memory into a
+        128-bit vector. This is used to load chunks of the input DNA sequence.
+      </p>
+      <p>
+        <b>vceqq_u8</b>: Compares each element of two vectors for equality and
+        returns a mask vector with elements set to 0xFF if equal, and 0x00
+        otherwise. This is used to create masks that identify the positions of
+        each nucleotide.
+      </p>
+      <p>
+        <b>vbslq_u8</b>: Performs a bitwise selection between two vectors based
+        on a mask vector. Elements from the first vector are selected where the
+        mask is 0xFF, and elements from the second vector where the mask is
+        0x00. This is used to select the appropriate complement for each
+        nucleotide.
+      </p>
+      <p>
+        <b>vst1q_u8</b>: Stores 16 unsigned 8-bit integers from a 128-bit vector
+        into memory. This is used to store the computed complement sequence back
+        into the input array.
+      </p>
     </div>
   );
 };

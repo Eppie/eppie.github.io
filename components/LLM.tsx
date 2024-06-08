@@ -7,6 +7,7 @@ import {
   MLCEngineInterface,
 } from '@mlc-ai/web-llm';
 import styles from '../styles/LLM.module.css';
+import { Progress } from '@mantine/core';
 interface Props {
   defaultCharacter1?: string;
   defaultCharacter2?: string;
@@ -103,16 +104,15 @@ const LLM: React.FC<Props> = ({
     return await engineRef.current.getMessage();
   };
 
-  const handleButtonClick = async () => {
+  const handleStartConversation = async () => {
     if (!character1 || !character2) {
       return;
     }
+    if (!engineRef.current) {
+      console.error('Engine not initialized');
+      return;
+    }
     try {
-      if (!engineRef.current) {
-        console.error('Engine not initialized');
-        return;
-      }
-
       messageDict[AI_1].push({
         role: 'user',
         content: `${character2}: ${prompt}`,
@@ -159,6 +159,14 @@ const LLM: React.FC<Props> = ({
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleStopConversation = async (): Promise<void> => {
+    if (!engineRef.current) {
+      console.error('Engine not initialized');
+      return;
+    }
+    engineRef.current.interruptGenerate();
   };
 
   function updateProgressBar(text: string): void {
@@ -209,12 +217,7 @@ const LLM: React.FC<Props> = ({
 
   return (
     <div className={styles.outer}>
-      <progress
-        id='progressBar'
-        className={styles.progressBar}
-        value={progress}
-        max='100'
-      ></progress>
+    <Progress radius="xl" size="xl" value={progress} striped animated />
       <h3>Prompt</h3>
       <input
         type='text'
@@ -266,11 +269,19 @@ const LLM: React.FC<Props> = ({
       </div>
       <button
         ref={buttonRef}
-        onClick={handleButtonClick}
+        onClick={handleStartConversation}
         disabled={!isEngineLoaded || !character1 || !character2}
         className={`${styles.button} ${!isEngineLoaded || !character1 || !character2 ? styles.disabled : ''}`}
       >
         Start Conversation
+      </button>
+      <button
+        ref={buttonRef}
+        onClick={handleStopConversation}
+        disabled={!isEngineLoaded}
+        className={`${styles.button} ${!isEngineLoaded ? styles.disabled : ''}`}
+      >
+        Stop Conversation
       </button>
       <h3>Current response:</h3>
       <div>{currentResponse}</div>
