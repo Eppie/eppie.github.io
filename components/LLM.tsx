@@ -8,6 +8,9 @@ import {
 } from '@mlc-ai/web-llm';
 import styles from '../styles/LLM.module.css';
 import { Progress } from '@mantine/core';
+import CharacterInput from './CharacterInput';
+import TemperatureSlider from './Temperature';
+import PromptInput from "./PromptInput";
 interface Props {
   defaultCharacter1?: string;
   defaultCharacter2?: string;
@@ -29,22 +32,6 @@ const LLM: React.FC<Props> = ({
   const [character1, setCharacter1] = useState<string>(defaultCharacter1);
   const [character2, setCharacter2] = useState<string>(defaultCharacter2);
   const [isEngineLoaded, setIsEngineLoaded] = useState<boolean>(false);
-
-  const handlePromptChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrompt(event.target.value);
-  };
-
-  const handleTemperatureChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setTemperature(parseFloat(event.target.value));
-  };
-
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      buttonRef.current?.click();
-    }
-  };
 
   const appendResponse = (newResponse: string) => {
     setResponses((prevResponses) => [...prevResponses, newResponse]);
@@ -217,56 +204,18 @@ const LLM: React.FC<Props> = ({
 
   return (
     <div className={styles.outer}>
-    <Progress radius="xl" size="xl" value={progress} striped animated />
-      <h3>Prompt</h3>
-      <input
-        type='text'
-        value={prompt}
-        onChange={handlePromptChange}
-        onKeyDown={handleKeyPress}
-        style={{
-          width: '100%',
-          padding: '10px',
-          marginBottom: '20px',
-          fontSize: '16px',
-        }}
+      <Progress radius='xl' size='xl' value={progress} striped animated />
+      <PromptInput prompt={prompt} setPrompt={setPrompt} onEnter={handleStartConversation}/>
+      <TemperatureSlider
+        temperature={temperature}
+        setTemperature={setTemperature}
       />
-      <p>
-        The `temperature` slider controls how creative or predictable the AI’s
-        responses are. Lower values (closer to 0) make the AI more focused and
-        consistent, while higher values (closer to 1.5) make the responses more
-        diverse and imaginative.
-      </p>
-      <div style={{ marginBottom: '20px' }}>
-        <label>Temperature: {temperature}</label>
-        <input
-          type='range'
-          min='0'
-          max='1.5'
-          step='0.01'
-          value={temperature}
-          onChange={handleTemperatureChange}
-          style={{ width: '50%', marginTop: '10px' }}
-        />
-      </div>
-      <div className={styles.formRow}>
-        <label>
-          Character 1:
-          <input
-            type='text'
-            value={character1}
-            onChange={(e) => setCharacter1(e.target.value)}
-          />
-        </label>
-        <label>
-          Character 2:
-          <input
-            type='text'
-            value={character2}
-            onChange={(e) => setCharacter2(e.target.value)}
-          />
-        </label>
-      </div>
+      <CharacterInput
+        character1={character1}
+        setCharacter1={setCharacter1}
+        character2={character2}
+        setCharacter2={setCharacter2}
+      />
       <button
         ref={buttonRef}
         onClick={handleStartConversation}

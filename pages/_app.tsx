@@ -7,19 +7,18 @@ import Footer from '../components/Footer';
 import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 
-
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
-      <MantineProvider>
-    <AppProvider>
-      <Header />
-      <main>
-        <div className='container'>
-          <Component {...pageProps} />
-        </div>
-      </main>
-      <Footer />
-    </AppProvider>
+    <MantineProvider>
+      <AppProvider>
+        <Header />
+        <main>
+          <div className='container'>
+            <Component {...pageProps} />
+          </div>
+        </main>
+        <Footer />
+      </AppProvider>
     </MantineProvider>
   );
 };
