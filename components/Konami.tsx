@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const useKonamiCode = (callback: () => void) => {
-  const [input, setInput] = useState<string[]>([]);
+  const inputRef = useRef<string[]>([]);
 
   useEffect(() => {
     const konamiCode = [
@@ -18,13 +18,13 @@ export const useKonamiCode = (callback: () => void) => {
     ];
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      setInput((prevInput) =>
-        [...prevInput, event.code].slice(-konamiCode.length)
+      inputRef.current = [...inputRef.current, event.code].slice(
+        -konamiCode.length
       );
 
-      if (input.join('') === konamiCode.join('')) {
+      if (inputRef.current.join('') === konamiCode.join('')) {
         callback();
-        setInput([]); // Reset input after code is detected
+        inputRef.current = []; // Reset input after code is detected
       }
     };
 
@@ -33,7 +33,7 @@ export const useKonamiCode = (callback: () => void) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [input, callback]);
+  }, [callback]);
 
   return null;
 };

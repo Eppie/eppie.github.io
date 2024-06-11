@@ -6,7 +6,11 @@ interface PromptInputProps {
   onEnter: (value: string) => void;
 }
 
-const PromptInput: React.FC<PromptInputProps> = ({ prompt, setPrompt, onEnter }) => {
+const PromptInput: React.FC<PromptInputProps> = ({
+  prompt,
+  setPrompt,
+  onEnter,
+}) => {
   const handlePromptChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPrompt(event.target.value);
   };
@@ -25,7 +29,12 @@ const PromptInput: React.FC<PromptInputProps> = ({ prompt, setPrompt, onEnter })
         value={prompt}
         onChange={handlePromptChange}
         onKeyDown={handleKeyPress}
-        style={{ width: '100%', padding: '10px', marginBottom: '20px', fontSize: '16px' }}
+        style={{
+          width: '100%',
+          padding: '10px',
+          marginBottom: '20px',
+          fontSize: '16px',
+        }}
       />
     </div>
   );

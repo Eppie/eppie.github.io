@@ -10,7 +10,7 @@ import styles from '../styles/LLM.module.css';
 import { Progress } from '@mantine/core';
 import CharacterInput from './CharacterInput';
 import TemperatureSlider from './Temperature';
-import PromptInput from "./PromptInput";
+import PromptInput from './PromptInput';
 interface Props {
   defaultCharacter1?: string;
   defaultCharacter2?: string;
@@ -205,7 +205,11 @@ const LLM: React.FC<Props> = ({
   return (
     <div className={styles.outer}>
       <Progress radius='xl' size='xl' value={progress} striped animated />
-      <PromptInput prompt={prompt} setPrompt={setPrompt} onEnter={handleStartConversation}/>
+      <PromptInput
+        prompt={prompt}
+        setPrompt={setPrompt}
+        onEnter={handleStartConversation}
+      />
       <TemperatureSlider
         temperature={temperature}
         setTemperature={setTemperature}
