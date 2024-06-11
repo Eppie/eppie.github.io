@@ -12,8 +12,7 @@ const About: React.FC = () => {
           Philadelphia. With a love for solving complex problems and a knack for
           building efficient systems, I&apos;ve spent my career turning
           innovative ideas into reality. When I&apos;m not coding, you can find
-          me exploring the vibrant food scene in Philly or indulging in my
-          latest hobby – photography.
+          me petting my cats or indulging in one of my hobbies, such as photography.
         </p>
       </section>
       <section>
@@ -21,11 +20,11 @@ const About: React.FC = () => {
         <p>
           My professional journey has taken me through various exciting roles
           where I&apos;ve had the opportunity to work on cutting-edge
-          technologies and collaborate with brilliant minds. At Freenome, I lead
-          the development of backend systems that power genomic data processing,
+          technologies and collaborate with brilliant minds. At Freenome, I develop
+          backend systems that power genomic data processing,
           contributing to advancements in healthcare. Previously, at Elsevier, I
-          managed a team of talented engineers to create impactful products in
-          the healthcare and research fields.
+          led a team of talented engineers to create impactful products in
+          the healthcare field.
         </p>
       </section>
       <section>
@@ -39,11 +38,9 @@ const About: React.FC = () => {
         </p>
         <p>
           Beyond work, I&apos;m always eager to learn and explore new
-          technologies. Recently, I&apos;ve been experimenting with interactive
-          data visualizations using D3.js and optimizing performance with
-          WebAssembly. Open source contributions are also close to my heart – I
-          love giving back to the community and collaborating on exciting
-          projects.
+          technologies. Recently, I&apos;ve been experimenting with LLMs and React, which has resulted in this website.
+          Open source contributions are also close to my heart – I love giving back to the community
+          and collaborating on exciting projects.
         </p>
       </section>
       <section>
@@ -51,29 +48,17 @@ const About: React.FC = () => {
         <p>
           I hold a Bachelor&apos;s degree in Computer Science from the
           University of Delaware, with a concentration in Artificial
-          Intelligence and a minor in Psychology. My academic journey sparked my
-          fascination with AI and continues to influence my work today.
+          Intelligence and a minor in Psychology.
         </p>
       </section>
       <section>
         <h2>Personal Projects</h2>
         <p>
           My personal projects are a reflection of my curiosity and drive to
-          innovate. I built this website with React and host it on GitHub Pages,
-          aiming to showcase my skills and share my journey with the world. I
+          innovate. I built this website with React and host it on GitHub Pages. I
           also enjoy creating interactive data visualizations and contributing
           to open-source projects – it&apos;s a great way to stay sharp and
           connected with the tech community.
-        </p>
-      </section>
-      <section>
-        <h2>Certifications</h2>
-        <p>
-          To continually enhance my expertise, I&apos;ve earned certifications
-          such as Certified Kubernetes Administrator (CKA), AWS Certified
-          Solutions Architect – Associate, and Google Cloud Professional Data
-          Engineer. These certifications validate my skills and commitment to
-          staying at the forefront of technology.
         </p>
       </section>
       <section>
@@ -81,10 +66,8 @@ const About: React.FC = () => {
         <p>
           I&apos;m always excited to connect with like-minded professionals and
           explore new opportunities. Whether you want to discuss a potential
-          collaboration or just say hello, feel free to reach out via{' '}
-          <a href='mailto:your-email@example.com'>email</a> or connect with me
-          on
-          <a href='https://www.linkedin.com/in/your-linkedin/'>LinkedIn</a>.
+          collaboration or just say hello, feel free to connect with me
+          on <a href='https://www.linkedin.com/in/andrew-epstein/'>LinkedIn</a>.
         </p>
       </section>
     </div>
