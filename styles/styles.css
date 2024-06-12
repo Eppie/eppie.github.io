@@ -15,6 +15,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 #__next {
   display: flex;
   flex-direction: column;
@@ -65,4 +66,26 @@ a:hover {
 
 .container a:hover {
   text-decoration: underline;
+}
+
+body.dark {
+  background: #121212;
+  color: #ffffff;
+}
+
+body.dark main {
+  background: #333333;
+}
+
+body.dark .container {
+  background: #444444;
+  color: #ffffff;
+}
+
+body.dark a {
+  color: #ffdd57;
+}
+
+body.dark a:hover {
+  color: #ffffff;
 }

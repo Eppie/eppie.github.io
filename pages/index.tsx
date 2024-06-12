@@ -1,7 +1,6 @@
 import React from 'react';
-import Home from '../components/Home';
 import Confetti from 'react-confetti';
-import { useAppState } from '../hooks/useAppState';
+import { useAppState } from '../context/AppContext';
 
 const HomePage: React.FC = () => {
   const { isFlipped, showConfetti } = useAppState();
@@ -9,7 +8,10 @@ const HomePage: React.FC = () => {
     <div>
       {showConfetti && <Confetti />}
       <div className={`app-container ${isFlipped ? 'flipped' : ''}`}>
-        <Home />
+        <div>
+          <h2>Home</h2>
+          <p>Welcome to my personal website!</p>
+        </div>
       </div>
     </div>
   );
