@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import subprocess
 import requests
 import json
@@ -6,32 +7,43 @@ from typing import List, Optional, Tuple
 
 # Constants
 API_URL = "http://localhost:11434/api/generate"
-MODEL = "codestral:latest"
+MODEL = "qwen2:72b-instruct"
 HEADERS = {"Content-Type": "application/json"}
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 
 def get_changed_files() -> Tuple[List[str], List[str]]:
     """
     Retrieves the list of staged and unstaged files using git diff commands.
 
     Returns:
-        A tuple containing two lists: 
+        A tuple containing two lists:
         - List of staged file paths.
         - List of unstaged file paths.
     """
     try:
-        staged_result = subprocess.run(['git', 'diff', '--cached', '--name-only'], capture_output=True, text=True, check=True)
-        unstaged_result = subprocess.run(['git', 'diff', '--name-only'], capture_output=True, text=True, check=True)
-        
-        staged_files = staged_result.stdout.strip().split('\n')
-        unstaged_files = unstaged_result.stdout.strip().split('\n')
-        
+        staged_result = subprocess.run(
+            ["git", "diff", "--cached", "--name-only"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        unstaged_result = subprocess.run(
+            ["git", "diff", "--name-only"], capture_output=True, text=True, check=True
+        )
+
+        staged_files = staged_result.stdout.strip().split("\n")
+        unstaged_files = unstaged_result.stdout.strip().split("\n")
+
         return staged_files, unstaged_files
     except subprocess.CalledProcessError:
         logging.error("Error running git diff commands")
         return [], []
+
 
 def get_file_diff(file: str, staged: bool = False) -> Optional[str]:
     """
@@ -45,12 +57,17 @@ def get_file_diff(file: str, staged: bool = False) -> Optional[str]:
         The git diff as a string, or None if there was an error.
     """
     try:
-        diff_command = ['git', 'diff', file] if not staged else ['git', 'diff', '--cached', file]
-        result = subprocess.run(diff_command, capture_output=True, text=True, check=True)
+        diff_command = (
+            ["git", "diff", file] if not staged else ["git", "diff", "--cached", file]
+        )
+        result = subprocess.run(
+            diff_command, capture_output=True, text=True, check=True
+        )
         return result.stdout
     except subprocess.CalledProcessError:
         logging.error(f"Error running git diff for {file}")
         return None
+
 
 def create_json_payload(diff: str) -> str:
     """
@@ -65,16 +82,14 @@ def create_json_payload(diff: str) -> str:
     prompt = (
         "You are a helpful coding assistant. Based on the following git diff, write a concise and informative git commit "
         "message that clearly explains the changes made. Your response must be in JSON format, following this schema: "
-        "{\"commit_message\": \"your commit message\", \"explanation\": \"your explanation\"}\n\nExample diff:\n"
-        "```diff\n- old_algo()\n+ new_algo()\n```\nExample commit message: \"Updated function to use new algorithm for "
-        "better performance.\"\n\nActual diff:\n```diff\n" + diff + "\n```"
+        '{"commit_message": "your commit message", "explanation": "your explanation"}\n\nExample diff:\n'
+        '```diff\n- old_algo()\n+ new_algo()\n```\nExample commit message: "Updated function to use new algorithm for '
+        'better performance."\n\nActual diff:\n```diff\n' + diff + "\n```"
     )
-    return json.dumps({
-        "model": MODEL,
-        "prompt": prompt,
-        "stream": False,
-        "format": "json"
-    })
+    return json.dumps(
+        {"model": MODEL, "prompt": prompt, "stream": False, "format": "json"}
+    )
+
 
 def make_request(payload: str) -> Optional[dict]:
     """
@@ -94,6 +109,7 @@ def make_request(payload: str) -> Optional[dict]:
         logging.error(f"Error making request: {e}")
         return None
 
+
 def process_response(response: dict) -> str:
     """
     Processes the API response to extract the commit message.
@@ -105,10 +121,14 @@ def process_response(response: dict) -> str:
         The commit message as a string.
     """
     try:
-        return json.loads(response.get('response', '{}')).get('commit_message', 'No commit message found')
+        logging.info(response)
+        return json.loads(response.get("response", "{}")).get(
+            "commit_message", "No commit message found"
+        )
     except json.JSONDecodeError:
         logging.error("Error decoding JSON response")
         return "No commit message found"
+
 
 def create_final_payload(commit_messages: List[str]) -> str:
     """
@@ -124,19 +144,17 @@ def create_final_payload(commit_messages: List[str]) -> str:
     prompt = (
         "You are a helpful assistant. Based on the following individual commit messages, combine them into one concise "
         "and cohesive commit message that clearly explains the overall changes made. Your response must be in JSON "
-        "format, following this schema: {\"commit_message\": \"your commit message\", \"explanation\": \"your explanation\"}\n\n"
+        'format, following this schema: {"commit_message": "your commit message", "explanation": "your explanation"}\n\n'
         f"Individual commit messages:\n{messages}"
     )
-    return json.dumps({
-        "model": MODEL,
-        "prompt": prompt,
-        "stream": False,
-        "format": "json"
-    })
+    return json.dumps(
+        {"model": MODEL, "prompt": prompt, "stream": False, "format": "json"}
+    )
+
 
 def main():
     staged_files, unstaged_files = get_changed_files()
-    
+
     if not staged_files and not unstaged_files:
         logging.info("No changed files")
         return
@@ -164,7 +182,9 @@ def main():
         response = make_request(payload)
         if response:
             commit_message = process_response(response)
-            logging.info(f"Commit message for unstaged file {file}:\n{commit_message}\n")
+            logging.info(
+                f"Commit message for unstaged file {file}:\n{commit_message}\n"
+            )
             commit_messages.append(commit_message)
 
     if commit_messages:
@@ -173,6 +193,7 @@ def main():
         if final_response:
             final_commit_message = process_response(final_response)
             logging.info(f"Final cohesive commit message:\n{final_commit_message}")
+
 
 if __name__ == "__main__":
     main()
