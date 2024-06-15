@@ -1,5 +1,5 @@
 import React from 'react';
-import LLM from '../components/LLM';
+import LLM from '../../components/LLM';
 
 const LLMPage: React.FC = () => {
   return (

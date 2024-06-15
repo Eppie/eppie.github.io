@@ -5,22 +5,24 @@ const ProjectsPage: React.FC = () => {
   return (
     <div>
       <p>
-        <Link href='/complement'>DNA Complement (WIP)</Link>
+        <Link href='/projects/complement'>DNA Complement (WIP)</Link>
       </p>
       <p>
-        <Link href='/llm_roleplay'>LLM Roleplay (WIP)</Link>
+        <Link href='/projects/llm_roleplay'>LLM Roleplay (WIP)</Link>
       </p>
       <p>
-        <Link href='/sd_lora'>Stable Diffusion Fine-Tuning (coming soon)</Link>
+        <Link href='/projects/sd_lora'>
+          Stable Diffusion Fine-Tuning (coming soon)
+        </Link>
       </p>
       <p>
-        <Link href='/compression'>Compression (coming soon)</Link>
+        <Link href='/projects/compression'>Compression (coming soon)</Link>
       </p>
       <p>
-        <Link href='/llm_bias'>LLM Bias (coming soon)</Link>
+        <Link href='/projects/llm_bias'>LLM Bias (coming soon)</Link>
       </p>
       <p>
-        <Link href='/brocard'>Brocard Problem</Link>
+        <Link href='/projects/brocard'>Brocard Problem</Link>
       </p>
     </div>
   );

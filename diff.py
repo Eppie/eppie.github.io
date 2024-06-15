@@ -5,12 +5,10 @@ import json
 import logging
 from typing import List, Optional, Tuple
 
-# Constants
 API_URL = "http://localhost:11434/api/generate"
 MODEL = "qwen2:72b-instruct"
 HEADERS = {"Content-Type": "application/json"}
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
@@ -27,16 +25,17 @@ def get_changed_files() -> Tuple[List[str], List[str]]:
     """
     try:
         staged_result = subprocess.run(
-            ["git", "diff", "--cached", "--name-only"],
+            ["git", "diff", "--cached", "--name-status"],
             capture_output=True,
             text=True,
             check=True,
         )
+
         unstaged_result = subprocess.run(
             ["git", "diff", "--name-only"], capture_output=True, text=True, check=True
         )
 
-        staged_files = staged_result.stdout.strip().split("\n")
+        staged_files = [line.split("\t")[1] for line in staged_result.stdout.splitlines() if line.startswith("M")]
         unstaged_files = unstaged_result.stdout.strip().split("\n")
 
         return staged_files, unstaged_files
@@ -45,7 +44,7 @@ def get_changed_files() -> Tuple[List[str], List[str]]:
         return [], []
 
 
-def get_file_diff(file: str, staged: bool = False) -> Optional[str]:
+def get_file_diff(file: str, staged: bool = False) -> str | None:
     """
     Retrieves the git diff for a specific file.
 
@@ -63,6 +62,7 @@ def get_file_diff(file: str, staged: bool = False) -> Optional[str]:
         result = subprocess.run(
             diff_command, capture_output=True, text=True, check=True
         )
+        logging.info(f"Got diff for file: {file}")
         return result.stdout
     except subprocess.CalledProcessError:
         logging.error(f"Error running git diff for {file}")
@@ -160,6 +160,8 @@ def main():
         return
 
     commit_messages = []
+    print(staged_files)
+    print(unstaged_files)
 
     for file in staged_files:
         diff = get_file_diff(file, staged=True)
