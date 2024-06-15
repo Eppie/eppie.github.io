@@ -81,11 +81,3 @@ body.dark .container {
   background: #444444;
   color: #ffffff;
 }
-
-body.dark a {
-  color: #ffdd57;
-}
-
-body.dark a:hover {
-  color: #ffffff;
-}

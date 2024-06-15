@@ -19,11 +19,7 @@ const Footer: React.FC = () => {
           <Switch
             checked={theme === 'dark'}
             onChange={toggleTheme}
-            label={
-              theme === 'light'
-                ? 'Switch to Dark Theme'
-                : 'Switch to Light Theme'
-            }
+            label={theme === 'light' ? 'Dark' : 'Light'}
           />
         )}
         <p>
