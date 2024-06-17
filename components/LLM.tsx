@@ -220,22 +220,24 @@ const LLM: React.FC<Props> = ({
         character2={character2}
         setCharacter2={setCharacter2}
       />
-      <button
-        ref={buttonRef}
-        onClick={handleStartConversation}
-        disabled={!isEngineLoaded || !character1 || !character2}
-        className={`${styles.button} ${!isEngineLoaded || !character1 || !character2 ? styles.disabled : ''}`}
-      >
-        Start Conversation
-      </button>
-      <button
-        ref={buttonRef}
-        onClick={handleStopConversation}
-        disabled={!isEngineLoaded}
-        className={`${styles.button} ${!isEngineLoaded ? styles.disabled : ''}`}
-      >
-        Stop Conversation
-      </button>
+      <div>
+        <button
+          ref={buttonRef}
+          onClick={handleStartConversation}
+          disabled={!isEngineLoaded || !character1 || !character2}
+          className={`${styles.button} ${!isEngineLoaded || !character1 || !character2 ? styles.disabled : ''}`}
+        >
+          Start Conversation
+        </button>
+        <button
+          ref={buttonRef}
+          onClick={handleStopConversation}
+          disabled={!isEngineLoaded}
+          className={`${styles.button} ${!isEngineLoaded ? styles.disabled : ''}`}
+        >
+          Stop Conversation
+        </button>
+      </div>
       <h3>Current response:</h3>
       <div>{currentResponse}</div>
       <div style={{ marginTop: '30px' }}>

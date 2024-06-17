@@ -16,14 +16,15 @@ const TemperatureSlider: React.FC<TemperatureSliderProps> = ({
   };
 
   return (
-    <div style={{ marginBottom: '20px' }}>
+    <div style={{}}>
+      <hr />
       <p>
         The `temperature` slider controls how creative or predictable the AI’s
         responses are. Lower values (closer to 0) make the AI more focused and
         consistent, while higher values (closer to 1.5) make the responses more
         diverse and imaginative.
       </p>
-      <label>Temperature: {temperature}</label>
+      <p>Temperature: {temperature}</p>
       <input
         type='range'
         min='0'
@@ -31,8 +32,9 @@ const TemperatureSlider: React.FC<TemperatureSliderProps> = ({
         step='0.01'
         value={temperature}
         onChange={handleTemperatureChange}
-        style={{ width: '50%', marginTop: '10px' }}
+        style={{ width: '50%' }}
       />
+      <hr />
     </div>
   );
 };

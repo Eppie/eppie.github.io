@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from '../styles/LLM.module.css';
 
 interface PromptInputProps {
   prompt: string;
@@ -29,12 +30,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
         value={prompt}
         onChange={handlePromptChange}
         onKeyDown={handleKeyPress}
-        style={{
-          width: '100%',
-          padding: '10px',
-          marginBottom: '20px',
-          fontSize: '16px',
-        }}
+        className={styles.promptInput}
       />
     </div>
   );

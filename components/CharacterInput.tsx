@@ -15,24 +15,22 @@ const CharacterInput: React.FC<CharacterInputProps> = ({
 }) => (
   <div className={styles.formRow}>
     <div>
-      <label>
-        Character 1:
-        <input
-          type='text'
-          value={character1}
-          onChange={(e) => setCharacter1(e.target.value)}
-        />
-      </label>
+      Character 1:
+      <input
+        type='text'
+        value={character1}
+        onChange={(e) => setCharacter1(e.target.value)}
+        className={styles.characterInput}
+      />
     </div>
     <div>
-      <label>
-        Character 2:
-        <input
-          type='text'
-          value={character2}
-          onChange={(e) => setCharacter2(e.target.value)}
-        />
-      </label>
+      Character 2:
+      <input
+        type='text'
+        value={character2}
+        onChange={(e) => setCharacter2(e.target.value)}
+        className={styles.characterInput}
+      />
     </div>
   </div>
 );
