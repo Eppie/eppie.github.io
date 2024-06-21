@@ -3,7 +3,6 @@ import {
   ChatCompletionMessageParam,
   ChatCompletionRequest,
   CreateMLCEngine,
-  CreateWebWorkerMLCEngine,
   InitProgressReport,
   MLCEngineInterface,
 } from '@mlc-ai/web-llm';
@@ -167,6 +166,7 @@ const LLM: React.FC<Props> = ({
     } else {
       console.error('Text format is incorrect.');
     }
+    console.log('Text: ' + text);
   }
 
   useEffect(() => {
@@ -177,13 +177,9 @@ const LLM: React.FC<Props> = ({
 
       try {
         const selectedModel = 'Llama-3-8B-Instruct-q4f32_1-MLC';
-        engineRef.current = await CreateWebWorkerMLCEngine(
-          new Worker(new URL('./worker.ts', import.meta.url), {
-            type: 'module',
-          }),
-          selectedModel,
-          { initProgressCallback }
-        );
+        engineRef.current = await CreateMLCEngine(selectedModel, {
+          initProgressCallback,
+        });
         setIsEngineLoaded(true);
       } catch (error) {
         console.error('Failed to initialize engine:', error);
