@@ -25,13 +25,16 @@ const LLM: React.FC<Props> = ({
   );
   const [responses, setResponses] = useState<string[]>([]);
   const [currentResponse, setCurrentResponse] = useState<string>('');
-  const [temperature, setTemperature] = useState<number>(0.8);
+  const [temperature, setTemperature] = useState<number>(1.0);
   const [progress, setProgress] = useState<number>(0);
   const engineRef = useRef<MLCEngineInterface | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [character1, setCharacter1] = useState<string>(defaultCharacter1);
   const [character2, setCharacter2] = useState<string>(defaultCharacter2);
   const [isEngineLoaded, setIsEngineLoaded] = useState<boolean>(false);
+  const [moderatorInstruction, setModeratorInstruction] = useState<string>(
+    'You are a moderator between two roleplayers that are engaging in a discussion. They are roleplaying as ${character1} and ${character2}. After each one of them has spoken, you will have a turn to interject. Keep your responses short. Your goal is to move the story along. Be creative, introduce new events to the story!'
+  );
 
   const appendResponse = (newResponse: string) => {
     setResponses((prevResponses) => [...prevResponses, newResponse]);
@@ -44,19 +47,19 @@ const LLM: React.FC<Props> = ({
     [AI_1]: [
       {
         role: 'system',
-        content: `You are ${character1} and you are having a conversation with ${character2}.`,
+        content: `You are ${character1} and you are having a conversation with ${character2}. You MUST speak only as ${character1}.`,
       },
     ],
     [AI_2]: [
       {
         role: 'system',
-        content: `You are ${character2} and you are having a conversation with ${character1}.`,
+        content: `You are ${character2} and you are having a conversation with ${character1}. You MUST speak only as ${character2}.`,
       },
     ],
     [AI_3]: [
       {
         role: 'system',
-        content: `You are a moderator between two roleplayers that are engaging in a discussion. They are roleplaying as ${character1} and ${character2}. After each one of them has spoken, you will have a turn to interject. Keep your responses short. Your goal is to move the story along. Be creative, introduce new events to the story!`,
+        content: moderatorInstruction,
       },
     ],
   };
@@ -202,14 +205,30 @@ const LLM: React.FC<Props> = ({
     }
   };
 
+  const handleModeratorInstructionChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setModeratorInstruction(event.target.value);
+  };
   return (
     <div className={styles.outer}>
-      <Progress radius='xl' size='xl' value={progress} striped animated />
+      {!isEngineLoaded && (
+        <Progress radius='xl' size='xl' value={progress} striped animated />
+      )}
       <PromptInput
         prompt={prompt}
         setPrompt={setPrompt}
         onEnter={handleStartConversation}
       />
+      <div>
+        <h3>Moderator Instructions</h3>
+        <input
+          type='text'
+          value={moderatorInstruction}
+          onChange={handleModeratorInstructionChange}
+          className={styles.promptInput}
+        />
+      </div>
       <TemperatureSlider
         temperature={temperature}
         setTemperature={setTemperature}
