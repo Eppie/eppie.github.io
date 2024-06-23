@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 import {
   ChatCompletionMessageParam,
   ChatCompletionRequest,
@@ -24,49 +24,101 @@ import {
   AI_3,
   MODEL_NAME,
 } from './constants';
+
 interface LLMProps {
   defaultCharacter1?: string;
   defaultCharacter2?: string;
+}
+
+interface State {
+  prompt: string;
+  responses: string[];
+  currentResponse: string;
+  temperature: number;
+  progress: number;
+  character1: string;
+  character2: string;
+  isEngineLoaded: boolean;
+  moderatorInstruction: string;
+}
+
+type Action =
+  | { type: 'SET_PROMPT'; payload: string }
+  | { type: 'APPEND_RESPONSE'; payload: string }
+  | { type: 'SET_CURRENT_RESPONSE'; payload: string }
+  | { type: 'SET_TEMPERATURE'; payload: number }
+  | { type: 'SET_PROGRESS'; payload: number }
+  | { type: 'SET_CHARACTER1'; payload: string }
+  | { type: 'SET_CHARACTER2'; payload: string }
+  | { type: 'SET_ENGINE_LOADED'; payload: boolean }
+  | { type: 'SET_MODERATOR_INSTRUCTION'; payload: string };
+
+const initialState: State = {
+  prompt: INITIAL_PROMPT,
+  responses: [],
+  currentResponse: '',
+  temperature: 1.0,
+  progress: 0,
+  character1: DEFAULT_CHARACTER_1,
+  character2: DEFAULT_CHARACTER_2,
+  isEngineLoaded: false,
+  moderatorInstruction: INITIAL_MODERATOR_INSTRUCTION,
+};
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'SET_PROMPT':
+      return { ...state, prompt: action.payload };
+    case 'APPEND_RESPONSE':
+      return { ...state, responses: [...state.responses, action.payload] };
+    case 'SET_CURRENT_RESPONSE':
+      return { ...state, currentResponse: action.payload };
+    case 'SET_TEMPERATURE':
+      return { ...state, temperature: action.payload };
+    case 'SET_PROGRESS':
+      return { ...state, progress: action.payload };
+    case 'SET_CHARACTER1':
+      return { ...state, character1: action.payload };
+    case 'SET_CHARACTER2':
+      return { ...state, character2: action.payload };
+    case 'SET_ENGINE_LOADED':
+      return { ...state, isEngineLoaded: action.payload };
+    case 'SET_MODERATOR_INSTRUCTION':
+      return { ...state, moderatorInstruction: action.payload };
+    default:
+      throw new Error('Unknown action type');
+  }
 }
 
 const LLM: React.FC<LLMProps> = ({
   defaultCharacter1 = DEFAULT_CHARACTER_1,
   defaultCharacter2 = DEFAULT_CHARACTER_2,
 }) => {
-  const [prompt, setPrompt] = useState<string>(INITIAL_PROMPT);
-  const [responses, setResponses] = useState<string[]>([]);
-  const [currentResponse, setCurrentResponse] = useState<string>('');
-  const [temperature, setTemperature] = useState<number>(1.0);
-  const [progress, setProgress] = useState<number>(0);
-  const engineRef = useRef<MLCEngineInterface | null>(null);
-  const [character1, setCharacter1] = useState<string>(defaultCharacter1);
-  const [character2, setCharacter2] = useState<string>(defaultCharacter2);
-  const [isEngineLoaded, setIsEngineLoaded] = useState<boolean>(false);
-  const [moderatorInstruction, setModeratorInstruction] = useState<string>(
-    INITIAL_MODERATOR_INSTRUCTION
-  );
+  const [state, dispatch] = useReducer(reducer, {
+    ...initialState,
+    character1: defaultCharacter1,
+    character2: defaultCharacter2,
+  });
 
-  const appendResponse = (newResponse: string) => {
-    setResponses((prevResponses) => [...prevResponses, newResponse]);
-  };
+  const engineRef = useRef<MLCEngineInterface | null>(null);
 
   const messageDict: Record<string, ChatCompletionMessageParam[]> = {
     [AI_1]: [
       {
         role: 'system',
-        content: `You are ${character1} and you are having a conversation with ${character2}. You MUST speak only as ${character1}.`,
+        content: `You are ${state.character1} and you are having a conversation with ${state.character2}. You MUST speak only as ${state.character1}.`,
       },
     ],
     [AI_2]: [
       {
         role: 'system',
-        content: `You are ${character2} and you are having a conversation with ${character1}. You MUST speak only as ${character2}.`,
+        content: `You are ${state.character2} and you are having a conversation with ${state.character1}. You MUST speak only as ${state.character2}.`,
       },
     ],
     [AI_3]: [
       {
         role: 'system',
-        content: moderatorInstruction,
+        content: state.moderatorInstruction,
       },
     ],
   };
@@ -83,7 +135,7 @@ const LLM: React.FC<LLMProps> = ({
     const request: ChatCompletionRequest = {
       stream: true,
       messages: messages,
-      temperature: temperature,
+      temperature: state.temperature,
       response_format: { type: json ? 'json_object' : 'text' },
     };
 
@@ -94,16 +146,16 @@ const LLM: React.FC<LLMProps> = ({
     for await (const chunk of asyncChunkGenerator) {
       if (chunk.choices[0].delta.content) {
         reply += chunk.choices[0].delta.content;
-        setCurrentResponse(reply);
+        dispatch({ type: 'SET_CURRENT_RESPONSE', payload: reply });
       }
     }
 
-    appendResponse(reply);
+    dispatch({ type: 'APPEND_RESPONSE', payload: reply })
     return await engineRef.current.getMessage();
   };
 
   const handleStartConversation = async () => {
-    if (!character1 || !character2) {
+    if (!state.character1 || !state.character2) {
       return;
     }
     if (!engineRef.current) {
@@ -113,9 +165,9 @@ const LLM: React.FC<LLMProps> = ({
     try {
       messageDict[AI_3].push({
         role: 'user',
-        content: `They are roleplaying as ${character1} and ${character2}.
-        (Note that ${character1} always speaks immediately after you)
-        Here's the starting scenario: ${prompt}\n\n Moderator: `,
+        content: `They are roleplaying as ${state.character1} and ${state.character2}.
+        (Note that ${state.character1} always speaks immediately after you)
+        Here's the starting scenario: ${state.prompt}\n\n Moderator: `,
       });
 
       for (let i = 0; i < 3; i++) {
@@ -152,7 +204,7 @@ const LLM: React.FC<LLMProps> = ({
 
         messageDict[AI_3].push({
           role: 'user',
-          content: `${character1}: "${messageFromAI1}"\n\n${character2}: "${messageFromAI2}\n\nModerator:"`,
+          content: `${state.character1}: "${messageFromAI1}"\n\n${state.character2}: "${messageFromAI2}\n\nModerator:"`,
         });
       }
     } catch (error) {
@@ -185,11 +237,9 @@ const LLM: React.FC<LLMProps> = ({
 
     const userMessage = await getOneMessage(messages, true);
     const jsonMessage = JSON.parse(userMessage);
-    console.log(userMessage);
-    console.log(jsonMessage);
-    setCharacter1(jsonMessage.character1 as string);
-    setCharacter2(jsonMessage.character2 as string);
-    setPrompt(jsonMessage.scenario as string);
+    dispatch({ type: 'SET_CHARACTER1', payload: jsonMessage.character1 });
+    dispatch({ type: 'SET_CHARACTER2', payload: jsonMessage.character2 });
+    dispatch({ type: 'SET_PROMPT', payload: jsonMessage.scenario });
   };
 
   function updateProgressBar(text: string): void {
@@ -199,7 +249,7 @@ const LLM: React.FC<LLMProps> = ({
       const total = parseInt(match[2], 10);
       const percentage = (loaded / total) * 100;
 
-      setProgress(percentage);
+      dispatch({ type: 'SET_PROGRESS', payload: percentage });
     } else {
       console.error('Text format is incorrect.');
     }
@@ -216,7 +266,7 @@ const LLM: React.FC<LLMProps> = ({
         engineRef.current = await CreateMLCEngine(MODEL_NAME, {
           initProgressCallback,
         });
-        setIsEngineLoaded(true);
+        dispatch({ type: 'SET_ENGINE_LOADED', payload: true });
       } catch (error) {
         console.error('Failed to initialize engine:', error);
       }
@@ -240,39 +290,55 @@ const LLM: React.FC<LLMProps> = ({
 
   return (
     <div className={styles.outer}>
-      {!isEngineLoaded && (
-        <Progress radius='xl' size='xl' value={progress} striped animated />
+      {!state.isEngineLoaded && (
+        <Progress
+          radius='xl'
+          size='xl'
+          value={state.progress}
+          striped
+          animated
+        />
       )}
       <PromptInput
-        prompt={prompt}
-        setPrompt={setPrompt}
+        prompt={state.prompt}
+        setPrompt={(prompt) =>
+          dispatch({ type: 'SET_PROMPT', payload: prompt })
+        }
         onEnter={handleStartConversation}
       />
       <ModeratorInstructionInput
-        instruction={moderatorInstruction}
-        setInstruction={setModeratorInstruction}
+        instruction={state.moderatorInstruction}
+        setInstruction={(instruction) =>
+          dispatch({ type: 'SET_MODERATOR_INSTRUCTION', payload: instruction })
+        }
       />
       <TemperatureSlider
-        temperature={temperature}
-        setTemperature={setTemperature}
+        temperature={state.temperature}
+        setTemperature={(temperature) =>
+          dispatch({ type: 'SET_TEMPERATURE', payload: temperature })
+        }
       />
       <CharacterInput
-        character1={character1}
-        setCharacter1={setCharacter1}
-        character2={character2}
-        setCharacter2={setCharacter2}
+        character1={state.character1}
+        setCharacter1={(character1) =>
+          dispatch({ type: 'SET_CHARACTER1', payload: character1 })
+        }
+        character2={state.character2}
+        setCharacter2={(character2) =>
+          dispatch({ type: 'SET_CHARACTER2', payload: character2 })
+        }
       />
       <ConversationControls
-        isEngineLoaded={isEngineLoaded}
-        character1={character1}
-        character2={character2}
+        isEngineLoaded={state.isEngineLoaded}
+        character1={state.character1}
+        character2={state.character2}
         onStartConversation={handleStartConversation}
         onStopConversation={handleStopConversation}
         onMakeCharacters={makeCharacters}
       />
       <ConversationDisplay
-        currentResponse={currentResponse}
-        responses={responses}
+        currentResponse={state.currentResponse}
+        responses={state.responses}
         getColorClass={getColorClass}
       />
     </div>

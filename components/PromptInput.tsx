@@ -3,8 +3,8 @@ import styles from '../styles/LLM.module.css';
 
 interface PromptInputProps {
   prompt: string;
-  setPrompt: React.Dispatch<React.SetStateAction<string>>;
-  onEnter: (value: string) => void;
+  setPrompt: (prompt: string) => void;
+  onEnter: () => void;
 }
 
 const PromptInput: React.FC<PromptInputProps> = ({
@@ -18,9 +18,10 @@ const PromptInput: React.FC<PromptInputProps> = ({
     setPrompt(event.target.value);
   };
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter') {
-      onEnter(prompt);
+      event.preventDefault();
+      onEnter();
     }
   };
 
@@ -30,7 +31,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
       <textarea
         value={prompt}
         onChange={handlePromptChange}
-        onKeyDown={handleKeyPress}
+        onKeyDown={handleKeyDown}
         className={styles.promptInput}
         rows={3}
         placeholder='Enter your prompt here...'
