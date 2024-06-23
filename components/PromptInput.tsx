@@ -12,11 +12,13 @@ const PromptInput: React.FC<PromptInputProps> = ({
   setPrompt,
   onEnter,
 }) => {
-  const handlePromptChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePromptChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setPrompt(event.target.value);
   };
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter') {
       onEnter(prompt);
     }
@@ -25,12 +27,13 @@ const PromptInput: React.FC<PromptInputProps> = ({
   return (
     <div>
       <h3>Prompt</h3>
-      <input
-        type='text'
+      <textarea
         value={prompt}
         onChange={handlePromptChange}
         onKeyDown={handleKeyPress}
         className={styles.promptInput}
+        rows={3}
+        placeholder='Enter your prompt here...'
       />
     </div>
   );

@@ -1,44 +1,47 @@
-import { Slider, Tooltip } from '@mantine/core';
 import React from 'react';
-import style from 'react-syntax-highlighter/dist/esm/styles/hljs/a11y-dark';
+import { Slider, Tooltip } from '@mantine/core';
 
 interface TemperatureSliderProps {
   temperature: number;
-  setTemperature: React.Dispatch<React.SetStateAction<number>>;
+  setTemperature: (value: number) => void;
 }
+
+const TEMPERATURE_MIN = 0;
+const TEMPERATURE_MAX = 1.5;
+const TEMPERATURE_STEP = 0.01;
+
+const TEMPERATURE_MARKS = [
+  { value: 0, label: '0' },
+  { value: 0.5, label: '0.5' },
+  { value: 1, label: '1' },
+  { value: 1.5, label: '1.5' },
+];
+
+const TOOLTIP_TEXT = `How predictable or creative the AI's responses are. Lower values make the AI more focused and consistent, while higher values make the responses more diverse and imaginative.`;
 
 const TemperatureSlider: React.FC<TemperatureSliderProps> = ({
   temperature,
   setTemperature,
 }) => {
   return (
-    <div style={{}}>
-      <hr />
-      <p></p>
-      <p>Temperature: {temperature}</p>
-      <Tooltip
-        label="How predictable or creative the AI's responses are. Lower values make the AI more focused and consistent, while higher values
-      make the responses more diverse and imaginative."
-        withArrow
-      >
+    <div>
+      <hr aria-hidden='true' />
+      <p>Temperature: {temperature.toFixed(2)}</p>
+      <Tooltip label={TOOLTIP_TEXT} withArrow>
         <Slider
           value={temperature}
           onChange={setTemperature}
-          min={0}
-          max={1.5}
-          step={0.01}
-          marks={[
-            { value: 0, label: '0' },
-            { value: 0.5, label: '0.5' },
-            { value: 1, label: '1' },
-            { value: 1.5, label: '1.5' },
-          ]}
+          min={TEMPERATURE_MIN}
+          max={TEMPERATURE_MAX}
+          step={TEMPERATURE_STEP}
+          marks={TEMPERATURE_MARKS}
           styles={{ root: { marginBottom: '40px' } }}
           label={null}
+          aria-label='Adjust AI response temperature'
         />
       </Tooltip>
     </div>
   );
 };
 
-export default TemperatureSlider;
+export default React.memo(TemperatureSlider);

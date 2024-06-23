@@ -6,7 +6,7 @@ import logging
 from typing import List, Optional, Tuple
 
 API_URL = "http://localhost:11434/api/generate"
-MODEL = "qwen2:72b-instruct"
+MODEL = "codestral:latest"
 HEADERS = {"Content-Type": "application/json"}
 
 logging.basicConfig(
