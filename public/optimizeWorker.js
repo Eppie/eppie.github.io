@@ -1,6 +1,6 @@
 import { Layout, Metrics } from '../types/types';
 
-const evaluateKeyboardLayout = (layout, text)=> {
+const evaluateKeyboardLayout = (layout, text) => {
   const metrics = {
     totalStrokes: 0,
     fingerAlternations: 0,
