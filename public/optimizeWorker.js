@@ -1,7 +1,7 @@
-import { Layout, Metrics } from './types'; // Assuming you have these types in a separate file called `types.ts`
+import { Layout, Metrics } from '../types/types';
 
-const evaluateKeyboardLayout = (layout: Layout, text: string): Metrics => {
-  const metrics: Metrics = {
+const evaluateKeyboardLayout = (layout, text)=> {
+  const metrics = {
     totalStrokes: 0,
     fingerAlternations: 0,
     sameFingerStrokes: 0,
@@ -10,8 +10,8 @@ const evaluateKeyboardLayout = (layout: Layout, text: string): Metrics => {
     distanceTraveled: 0,
   };
 
-  let prevFinger: string | null = null;
-  let prevPosition: [number, number] | null = null;
+  let prevFinger = null;
+  let prevPosition = null;
 
   for (let char of text.toUpperCase()) {
     if (char in layout) {
@@ -47,7 +47,7 @@ const evaluateKeyboardLayout = (layout: Layout, text: string): Metrics => {
   return metrics;
 };
 
-const tweakLayout = (layout: Layout): Layout => {
+const tweakLayout = (layout) => {
   const keys = Object.keys(layout);
   const [key1, key2] = [
     keys[Math.floor(Math.random() * keys.length)],
@@ -60,24 +60,20 @@ const tweakLayout = (layout: Layout): Layout => {
 };
 
 const optimizeLayout = (
-  layout: Layout,
-  text: string,
-  initialTemperature: number = 100,
-  coolingRate: number = 0.999,
-  iterations: number = 100000,
-  numRestarts: number = 5,
-  weights: { distance: number; handBalance: number; sameFinger: number }
-): {
-  bestLayout: Layout | null;
-  bestMetric: number;
-  iterationsCompleted: number;
-} => {
-  let bestLayoutOverall: Layout | null = null;
+  layout,
+  text,
+  initialTemperature = 100,
+  coolingRate = 0.999,
+  iterations = 100000,
+  numRestarts = 5,
+  weights
+) => {
+  let bestLayoutOverall = null;
   let bestMetricOverall = Infinity;
   let iterationsCompleted = 0;
 
   for (let i = 0; i < numRestarts; i++) {
-    let initialLayout: Layout = { ...layout };
+    let initialLayout = { ...layout };
     // let keys = Object.keys(initialLayout);
     // keys.sort(() => Math.random() - 0.5);
     // initialLayout = keys.reduce((acc, key, index) => ({ ...acc, [key]: initialLayout[key] }), {});

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Keyboard from '../../components/Keyboard';
-import { Layout } from './types';
+import { Layout } from '../../types/types';
 import styles from '../../styles/KeyboardOptimizer.module.css';
 
 const KeyboardPage: React.FC = () => {
@@ -52,20 +52,13 @@ const KeyboardPage: React.FC = () => {
   const [sameFingerWeight, setSameFingerWeight] = useState<number>(1);
 
   useEffect(() => {
-    workerRef.current = new Worker(
-      new URL('./optimizeWorker.ts', import.meta.url)
-    );
+    const worker = new Worker(new URL('/optimizeWorker.js'));
+    workerRef.current = worker;
     workerRef.current.onmessage = (e: MessageEvent) => {
       const { type, bestLayout, bestMetric, iterationsCompleted } = e.data;
-      if (type === 'progress') {
-        setBestMetricOverall(bestMetric);
-        setIterationCount(iterationsCompleted);
-        setOptimizedLayout(bestLayout);
-      } else if (type === 'result') {
-        setOptimizedLayout(bestLayout);
-        setBestMetricOverall(bestMetric);
-        setIterationCount(iterationsCompleted);
-      }
+      setOptimizedLayout(bestLayout);
+      setBestMetricOverall(bestMetric);
+      setIterationCount(iterationsCompleted);
     };
 
     return () => {
