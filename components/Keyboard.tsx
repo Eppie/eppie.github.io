@@ -5,7 +5,9 @@ interface KeyboardProps {
   layout: string;
 }
 
-const Keyboard: React.FC<KeyboardProps> = ({ layout = 'qwertyuiopasdfghjklzxcvbnm' }) => {
+const Keyboard: React.FC<KeyboardProps> = ({
+  layout = 'qwertyuiopasdfghjklzxcvbnm',
+}) => {
   const [prevLayout, setPrevLayout] = useState<string>('');
   const [updatedKeys, setUpdatedKeys] = useState<Set<string>>(new Set());
 
@@ -43,7 +45,10 @@ const Keyboard: React.FC<KeyboardProps> = ({ layout = 'qwertyuiopasdfghjklzxcvbn
     <div className={styles.keyboard}>
       <div className={styles.keyboardRow}>
         {rows[0].map((key, index) => (
-          <div key={index} className={`${styles.key} ${updatedKeys.has(key) ? styles.updated : ''}`}>
+          <div
+            key={index}
+            className={`${styles.key} ${updatedKeys.has(key) ? styles.updated : ''}`}
+          >
             {key.toUpperCase()}
           </div>
         ))}
@@ -51,7 +56,10 @@ const Keyboard: React.FC<KeyboardProps> = ({ layout = 'qwertyuiopasdfghjklzxcvbn
       <div className={styles.keyboardRow}>
         <div className={`${styles.spacer} ${styles.half}`}></div>
         {rows[1].map((key, index) => (
-          <div key={index} className={`${styles.key} ${updatedKeys.has(key) ? styles.updated : ''}`}>
+          <div
+            key={index}
+            className={`${styles.key} ${updatedKeys.has(key) ? styles.updated : ''}`}
+          >
             {key.toUpperCase()}
           </div>
         ))}
@@ -60,7 +68,10 @@ const Keyboard: React.FC<KeyboardProps> = ({ layout = 'qwertyuiopasdfghjklzxcvbn
       <div className={styles.keyboardRow}>
         <div className={`${styles.spacer} ${styles.threeQuarters}`}></div>
         {rows[2].map((key, index) => (
-          <div key={index} className={`${styles.key} ${updatedKeys.has(key) ? styles.updated : ''}`}>
+          <div
+            key={index}
+            className={`${styles.key} ${updatedKeys.has(key) ? styles.updated : ''}`}
+          >
             {key.toUpperCase()}
           </div>
         ))}

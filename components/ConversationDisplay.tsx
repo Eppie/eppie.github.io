@@ -11,7 +11,7 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   currentResponse,
   responses,
 }) => {
-    const getColorClass = (index: number) => {
+  const getColorClass = (index: number) => {
     switch (index % 3) {
       case 0:
         return `${styles.color1} ${styles.messageBubble}`;

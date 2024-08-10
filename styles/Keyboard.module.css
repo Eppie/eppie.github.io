@@ -23,7 +23,9 @@
   border-radius: 5px;
   font-size: 18px;
   font-family: Arial, sans-serif;
-  transition: background-color 0.3s ease, transform 0.3s ease; /* Add transition */
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease; /* Add transition */
 }
 
 .key.updated {

@@ -150,7 +150,7 @@ const LLM: React.FC<LLMProps> = ({
       }
     }
 
-    dispatch({ type: 'APPEND_RESPONSE', payload: reply })
+    dispatch({ type: 'APPEND_RESPONSE', payload: reply });
     return await engineRef.current.getMessage();
   };
 
