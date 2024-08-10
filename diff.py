@@ -6,7 +6,7 @@ import logging
 from typing import List, Optional, Tuple
 
 API_URL = "http://localhost:11434/api/generate"
-MODEL = "codestral:latest"
+MODEL = "mistral-nemo:latest"
 HEADERS = {"Content-Type": "application/json"}
 
 logging.basicConfig(
@@ -35,7 +35,11 @@ def get_changed_files() -> Tuple[List[str], List[str]]:
             ["git", "diff", "--name-only"], capture_output=True, text=True, check=True
         )
 
-        staged_files = [line.split("\t")[1] for line in staged_result.stdout.splitlines() if line.startswith("M")]
+        staged_files = [
+            line.split("\t")[1]
+            for line in staged_result.stdout.splitlines()
+            if line.startswith("M")
+        ]
         unstaged_files = unstaged_result.stdout.strip().split("\n")
 
         return staged_files, unstaged_files

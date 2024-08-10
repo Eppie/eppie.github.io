@@ -10,8 +10,19 @@ interface ConversationDisplayProps {
 const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   currentResponse,
   responses,
-  getColorClass,
 }) => {
+    const getColorClass = (index: number) => {
+    switch (index % 3) {
+      case 0:
+        return `${styles.color1} ${styles.messageBubble}`;
+      case 1:
+        return `${styles.color2} ${styles.messageBubble}`;
+      case 2:
+        return `${styles.color3} ${styles.messageBubble}`;
+      default:
+        return '';
+    }
+  };
   return (
     <div className={styles.conversationDisplay}>
       <h3>Current response:</h3>

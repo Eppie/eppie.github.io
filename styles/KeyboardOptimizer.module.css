@@ -1,0 +1,91 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.title {
+  text-align: center;
+  color: #333;
+}
+
+.textArea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.settingsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.settingGroup {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 4px;
+}
+
+.settingGroup h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.inputGroup {
+  margin-bottom: 10px;
+}
+
+.inputGroup label {
+  display: block;
+  margin-bottom: 5px;
+  color: #666;
+}
+
+.inputGroup input {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #45a049;
+}
+
+.results {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.results h2 {
+  color: #333;
+}
+
+.keyboardContainer {
+  margin-top: 30px;
+}
+
+.keyboardContainer h2 {
+  text-align: center;
+  color: #333;
+}

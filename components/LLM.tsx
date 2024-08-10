@@ -275,19 +275,6 @@ const LLM: React.FC<LLMProps> = ({
     initEngine();
   }, []);
 
-  const getColorClass = (index: number) => {
-    switch (index % 3) {
-      case 0:
-        return `${styles.color1} ${styles.messageBubble}`;
-      case 1:
-        return `${styles.color2} ${styles.messageBubble}`;
-      case 2:
-        return `${styles.color3} ${styles.messageBubble}`;
-      default:
-        return '';
-    }
-  };
-
   return (
     <div className={styles.outer}>
       {!state.isEngineLoaded && (
@@ -339,7 +326,6 @@ const LLM: React.FC<LLMProps> = ({
       <ConversationDisplay
         currentResponse={state.currentResponse}
         responses={state.responses}
-        getColorClass={getColorClass}
       />
     </div>
   );
