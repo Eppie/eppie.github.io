@@ -52,7 +52,10 @@ const KeyboardPage: React.FC = () => {
   const [sameFingerWeight, setSameFingerWeight] = useState<number>(1);
 
   useEffect(() => {
-    const worker = new Worker(new URL('/optimizeWorker.js'));
+    const worker = new Worker(
+      new URL('/optimizeWorker.js', window.location.origin)
+    );
+
     workerRef.current = worker;
     workerRef.current.onmessage = (e: MessageEvent) => {
       const { type, bestLayout, bestMetric, iterationsCompleted } = e.data;

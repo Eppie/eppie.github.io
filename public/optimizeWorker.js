@@ -1,5 +1,3 @@
-import { Layout, Metrics } from '../types/types';
-
 const evaluateKeyboardLayout = (layout, text) => {
   const metrics = {
     totalStrokes: 0,
