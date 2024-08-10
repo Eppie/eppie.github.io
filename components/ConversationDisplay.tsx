@@ -4,7 +4,6 @@ import styles from '../styles/LLM.module.css';
 interface ConversationDisplayProps {
   currentResponse: string;
   responses: string[];
-  getColorClass: (index: number) => string;
 }
 
 const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
