@@ -6,29 +6,32 @@ interface KeyboardProps {
 }
 
 const Keyboard: React.FC<KeyboardProps> = ({ layout = 'qwertyuiopasdfghjklzxcvbnm' }) => {
-  if (layout.length !== 26) {
-    return <div>Invalid layout string</div>;
-  }
-
   const [prevLayout, setPrevLayout] = useState<string>('');
   const [updatedKeys, setUpdatedKeys] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const newUpdatedKeys = new Set<string>();
-    for (let i = 0; i < layout.length; i++) {
-      if (layout[i] !== prevLayout[i]) {
-        newUpdatedKeys.add(layout[i]);
+    if (layout.length === 26) {
+      const newUpdatedKeys = new Set<string>();
+      for (let i = 0; i < layout.length; i++) {
+        if (layout[i] !== prevLayout[i]) {
+          newUpdatedKeys.add(layout[i]);
+        }
       }
+      setUpdatedKeys(newUpdatedKeys);
+      setPrevLayout(layout);
+
+      const timeout = setTimeout(() => {
+        setUpdatedKeys(new Set());
+      }, 300); // Match the transition duration
+
+      return () => clearTimeout(timeout);
     }
-    setUpdatedKeys(newUpdatedKeys);
-    setPrevLayout(layout);
-
-    const timeout = setTimeout(() => {
-      setUpdatedKeys(new Set());
-    }, 300); // Match the transition duration
-
-    return () => clearTimeout(timeout);
   }, [layout, prevLayout]);
+
+  // Validate layout length
+  if (layout.length !== 26) {
+    return <div>Invalid layout string</div>;
+  }
 
   const rows = [
     layout.slice(0, 10).split(''),
