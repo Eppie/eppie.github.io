@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {
+  NumberInput,
+  Textarea,
+  Button,
+  Grid,
+  Title,
+  Container,
+} from '@mantine/core';
 import Keyboard from '../../components/Keyboard';
 import { Layout } from '../../types/types';
 import styles from '../../styles/KeyboardOptimizer.module.css';
+import FingerSelector from '../../components/FingerSelector';
 
 const KeyboardPage: React.FC = () => {
   const qwertyLayout: Layout = {
@@ -42,14 +51,22 @@ const KeyboardPage: React.FC = () => {
   const [iterationCount, setIterationCount] = useState<number>(0);
   const workerRef = useRef<Worker>();
 
-  const [initialTemperature, setInitialTemperature] = useState<number>(100);
-  const [coolingRate, setCoolingRate] = useState<number>(0.999);
-  const [iterations, setIterations] = useState<number>(100000);
-  const [numRestarts, setNumRestarts] = useState<number>(5);
+  const [initialTemperature, setInitialTemperature] = useState<number>(1000);
+  const [coolingRate, setCoolingRate] = useState<number>(0.99);
+  const [iterations, setIterations] = useState<number>(1000000);
+  const [numRestarts, setNumRestarts] = useState<number>(10);
 
   const [distanceWeight, setDistanceWeight] = useState<number>(1);
   const [handBalanceWeight, setHandBalanceWeight] = useState<number>(1);
   const [sameFingerWeight, setSameFingerWeight] = useState<number>(1);
+
+  const [fingerAssignments, setFingerAssignments] = useState<{
+    [key: string]: string;
+  }>({});
+
+  const [highlightedKeys, setHighlightedKeys] = useState<Set<string>>(
+    new Set()
+  );
 
   useEffect(() => {
     const worker = new Worker(
@@ -72,124 +89,123 @@ const KeyboardPage: React.FC = () => {
   const handleChangeText = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ): void => {
-    setText(event.target.value);
+    const newText = event.target.value;
+    setText(newText);
+    const lastChar = newText.slice(-1).toUpperCase();
+    setHighlightedKeys(new Set([lastChar]));
+    setTimeout(() => setHighlightedKeys(new Set()), 200);
+  };
+
+  const handleFingerAssign = (key: string, finger: string) => {
+    setFingerAssignments((prev) => ({ ...prev, [key]: finger }));
   };
 
   const handleOptimize = (): void => {
     setIterationCount(0);
     workerRef.current?.postMessage({
-      layout,
+      layout: { ...layout, ' ': [3, 5] }, // Add spacebar to layout
       text,
       initialTemperature,
       coolingRate,
       iterations,
       numRestarts,
       weights: {
-        // Add this object with the weights
         distance: distanceWeight,
         handBalance: handBalanceWeight,
         sameFinger: sameFingerWeight,
       },
+      fingerAssignments: { ...fingerAssignments, ' ': 'Right Thumb' }, // Add spacebar to finger assignments
     });
   };
 
   const layoutToString = (layout: Layout): string => {
-    const keys = Object.keys(layout).sort((a, b) => {
-      const [rowA, colA] = layout[a];
-      const [rowB, colB] = layout[b];
-      return rowA !== rowB ? rowA - rowB : colA - colB;
-    });
+    const keys = Object.keys(layout)
+      .filter((key) => key !== ' ') // Exclude spacebar from sorting
+      .sort((a, b) => {
+        const [rowA, colA] = layout[a];
+        const [rowB, colB] = layout[b];
+        return rowA !== rowB ? rowA - rowB : colA - colB;
+      });
     return keys.map((key) => key.toUpperCase()).join('');
   };
 
+  // New function to ensure the layout is valid
+  const ensureValidLayout = (layout: Layout | null): Layout => {
+    if (!layout) return qwertyLayout;
+    const validLayout = { ...layout };
+    if (!validLayout[' ']) {
+      validLayout[' '] = [3, 5]; // Add spacebar if it's missing
+    }
+    return validLayout;
+  };
+
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Optimize Keyboard Layout</h1>
-      <textarea
-        className={styles.textArea}
+    <Container className={styles.container}>
+      <Title order={1} className={styles.title}>
+        Optimize Keyboard Layout
+      </Title>
+      <FingerSelector
+        layout={layout}
+        fingerAssignments={fingerAssignments}
+        onFingerAssign={handleFingerAssign}
+      />
+      <Textarea
         value={text}
         onChange={handleChangeText}
-        rows={5}
         placeholder='Enter text to optimize for...'
+        autosize
+        minRows={5}
       />
-      <div className={styles.settingsGrid}>
-        <div className={styles.settingGroup}>
-          <h3>Optimization Settings</h3>
-          <div className={styles.inputGroup}>
-            <label htmlFor='initialTemp'>Initial Temperature:</label>
-            <input
-              id='initialTemp'
-              type='number'
-              value={initialTemperature}
-              onChange={(e) => setInitialTemperature(Number(e.target.value))}
-            />
-          </div>
-          <div className={styles.inputGroup}>
-            <label htmlFor='coolingRate'>Cooling Rate:</label>
-            <input
-              id='coolingRate'
-              type='number'
-              step='0.0001'
-              value={coolingRate}
-              onChange={(e) => setCoolingRate(Number(e.target.value))}
-            />
-          </div>
-          <div className={styles.inputGroup}>
-            <label htmlFor='iterations'>Iterations:</label>
-            <input
-              id='iterations'
-              type='number'
-              value={iterations}
-              onChange={(e) => setIterations(Number(e.target.value))}
-            />
-          </div>
-          <div className={styles.inputGroup}>
-            <label htmlFor='restarts'>Number of Restarts:</label>
-            <input
-              id='restarts'
-              type='number'
-              value={numRestarts}
-              onChange={(e) => setNumRestarts(Number(e.target.value))}
-            />
-          </div>
-        </div>
-        <div className={styles.settingGroup}>
-          <h3>Metric Weights</h3>
-          <div className={styles.inputGroup}>
-            <label htmlFor='distanceWeight'>Distance Traveled:</label>
-            <input
-              id='distanceWeight'
-              type='number'
-              step='0.1'
-              value={distanceWeight}
-              onChange={(e) => setDistanceWeight(Number(e.target.value))}
-            />
-          </div>
-          <div className={styles.inputGroup}>
-            <label htmlFor='handBalanceWeight'>Hand Balance:</label>
-            <input
-              id='handBalanceWeight'
-              type='number'
-              step='0.1'
-              value={handBalanceWeight}
-              onChange={(e) => setHandBalanceWeight(Number(e.target.value))}
-            />
-          </div>
-          <div className={styles.inputGroup}>
-            <label htmlFor='sameFingerWeight'>Same Finger Strokes:</label>
-            <input
-              id='sameFingerWeight'
-              type='number'
-              step='0.1'
-              value={sameFingerWeight}
-              onChange={(e) => setSameFingerWeight(Number(e.target.value))}
-            />
-          </div>
-        </div>
-      </div>
-      <button className={styles.button} onClick={handleOptimize}>
+      <Grid>
+        <Grid.Col span={6}>
+          <Title order={3}>Optimization Settings</Title>
+          <NumberInput
+            label='Initial Temperature'
+            value={initialTemperature}
+            onChange={(value) => setInitialTemperature(Number(value))}
+          />
+          <NumberInput
+            label='Cooling Rate'
+            value={coolingRate}
+            onChange={(value) => setCoolingRate(Number(value))}
+            step={0.0001}
+          />
+          <NumberInput
+            label='Iterations'
+            value={iterations}
+            onChange={(value) => setIterations(Number(value))}
+          />
+          <NumberInput
+            label='Number of Restarts'
+            value={numRestarts}
+            onChange={(value) => setNumRestarts(Number(value))}
+          />
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <Title order={3}>Metric Weights</Title>
+          <NumberInput
+            label='Distance Traveled'
+            value={distanceWeight}
+            onChange={(value) => setDistanceWeight(Number(value))}
+            step={0.1}
+          />
+          <NumberInput
+            label='Hand Balance'
+            value={handBalanceWeight}
+            onChange={(value) => setHandBalanceWeight(Number(value))}
+            step={0.1}
+          />
+          <NumberInput
+            label='Same Finger Strokes'
+            value={sameFingerWeight}
+            onChange={(value) => setSameFingerWeight(Number(value))}
+            step={0.1}
+          />
+        </Grid.Col>
+      </Grid>
+      <Button className={styles.button} onClick={handleOptimize}>
         Optimize Layout
-      </button>
+      </Button>
       <div className={styles.results}>
         <h2>
           Current Best Score:{' '}
@@ -200,14 +216,13 @@ const KeyboardPage: React.FC = () => {
         <h2>Iterations Completed: {iterationCount.toLocaleString()}</h2>
       </div>
       <div className={styles.keyboardContainer}>
-        <h2>Original Layout</h2>
-        <Keyboard layout={layoutToString(layout)} />
-      </div>
-      <div className={styles.keyboardContainer}>
         <h2>Optimized Layout</h2>
-        <Keyboard layout={layoutToString(optimizedLayout || layout)} />
+        <Keyboard
+          layout={layoutToString(ensureValidLayout(optimizedLayout || layout))}
+          highlightedKeys={highlightedKeys}
+        />
       </div>
-    </div>
+    </Container>
   );
 };
 

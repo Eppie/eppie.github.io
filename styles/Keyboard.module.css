@@ -33,6 +33,11 @@
   transform: scale(1.1); /* Slightly enlarge */
 }
 
+.key.highlighted {
+  background-color: #4caf50;
+  color: white;
+}
+
 .spacer {
   width: 20px;
   height: 40px;
@@ -48,4 +53,8 @@
 
 .spacer.rowThree {
   width: 50px;
+}
+
+.spacebar {
+  width: 200px;
 }

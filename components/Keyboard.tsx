@@ -3,10 +3,12 @@ import styles from '../styles/Keyboard.module.css';
 
 interface KeyboardProps {
   layout: string;
+  highlightedKeys: Set<string>;
 }
 
 const Keyboard: React.FC<KeyboardProps> = ({
   layout = 'qwertyuiopasdfghjklzxcvbnm',
+  highlightedKeys,
 }) => {
   const [prevLayout, setPrevLayout] = useState<string>('');
   const [updatedKeys, setUpdatedKeys] = useState<Set<string>>(new Set());
@@ -47,7 +49,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
         {rows[0].map((key, index) => (
           <div
             key={index}
-            className={`${styles.key} ${updatedKeys.has(key) ? styles.updated : ''}`}
+            className={`${styles.key} ${updatedKeys.has(key) ? styles.updated : ''} ${highlightedKeys.has(key) ? styles.highlighted : ''}`}
           >
             {key.toUpperCase()}
           </div>
@@ -58,7 +60,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
         {rows[1].map((key, index) => (
           <div
             key={index}
-            className={`${styles.key} ${updatedKeys.has(key) ? styles.updated : ''}`}
+            className={`${styles.key} ${updatedKeys.has(key) ? styles.updated : ''} ${highlightedKeys.has(key) ? styles.highlighted : ''}`}
           >
             {key.toUpperCase()}
           </div>
@@ -70,12 +72,19 @@ const Keyboard: React.FC<KeyboardProps> = ({
         {rows[2].map((key, index) => (
           <div
             key={index}
-            className={`${styles.key} ${updatedKeys.has(key) ? styles.updated : ''}`}
+            className={`${styles.key} ${updatedKeys.has(key) ? styles.updated : ''} ${highlightedKeys.has(key) ? styles.highlighted : ''}`}
           >
             {key.toUpperCase()}
           </div>
         ))}
         <div className={`${styles.spacer} ${styles.rowThree}`}></div>
+      </div>
+      <div className={styles.keyboardRow}>
+        <div
+          className={`${styles.key} ${styles.spacebar} ${highlightedKeys.has(' ') ? styles.highlighted : ''}`}
+        >
+          Space
+        </div>
       </div>
     </div>
   );

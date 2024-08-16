@@ -1,4 +1,4 @@
-const evaluateKeyboardLayout = (layout, text) => {
+const evaluateKeyboardLayout = (layout, text, fingerAssignments) => {
   const metrics = {
     totalStrokes: 0,
     fingerAlternations: 0,
@@ -16,7 +16,8 @@ const evaluateKeyboardLayout = (layout, text) => {
       const [row, col] = layout[char];
       metrics.totalStrokes += 1;
 
-      const currentFinger = col < 5 ? 'left' : 'right';
+      const currentFinger =
+        fingerAssignments[char] || (col < 5 ? 'left' : 'right');
 
       if (prevFinger !== null) {
         if (currentFinger !== prevFinger) {
@@ -31,9 +32,9 @@ const evaluateKeyboardLayout = (layout, text) => {
         }
       }
 
-      if (currentFinger === 'left') {
+      if (currentFinger.startsWith('Left')) {
         metrics.leftHandStrokes += 1;
-      } else {
+      } else if (currentFinger.startsWith('Right')) {
         metrics.rightHandStrokes += 1;
       }
 
@@ -64,7 +65,8 @@ const optimizeLayout = (
   coolingRate = 0.999,
   iterations = 100000,
   numRestarts = 5,
-  weights
+  weights,
+  fingerAssignments
 ) => {
   let bestLayoutOverall = null;
   let bestMetricOverall = Infinity;
@@ -72,10 +74,6 @@ const optimizeLayout = (
 
   for (let i = 0; i < numRestarts; i++) {
     let initialLayout = { ...layout };
-    // let keys = Object.keys(initialLayout);
-    // keys.sort(() => Math.random() - 0.5);
-    // initialLayout = keys.reduce((acc, key, index) => ({ ...acc, [key]: initialLayout[key] }), {});
-
     let bestLayout = initialLayout;
     let bestMetric = Infinity;
     let temperature = initialTemperature;
@@ -83,7 +81,11 @@ const optimizeLayout = (
 
     for (let j = 0; j < iterations; j++) {
       let tweakedLayout = tweakLayout({ ...bestLayout });
-      const metrics = evaluateKeyboardLayout(tweakedLayout, text);
+      const metrics = evaluateKeyboardLayout(
+        tweakedLayout,
+        text,
+        fingerAssignments
+      );
       const overallMetric =
         weights.distance * metrics.distanceTraveled +
         weights.handBalance *
@@ -108,16 +110,9 @@ const optimizeLayout = (
         }
       }
 
-      // temperature = Math.max(temperature, 1);
-
       if (j % 1000 === 0) {
         temperature *= coolingRate;
         const acceptanceRate = acceptanceCount / 1000;
-        // if (acceptanceRate < 0.1) {
-        // temperature += 1000;
-        // } else if (acceptanceRate > 0.5) {
-        // temperature -= 100;
-        // }
         acceptanceCount = 0;
         iterationsCompleted += 1000;
         console.log(
@@ -149,6 +144,7 @@ onmessage = (e) => {
     iterations,
     numRestarts,
     weights,
+    fingerAssignments,
   } = e.data;
   const result = optimizeLayout(
     layout,
@@ -157,7 +153,8 @@ onmessage = (e) => {
     coolingRate,
     iterations,
     numRestarts,
-    weights
+    weights,
+    fingerAssignments
   );
   postMessage({
     type: 'result',
