@@ -12,6 +12,22 @@ import { Layout } from '../../types/types';
 import styles from '../../styles/KeyboardOptimizer.module.css';
 import FingerSelector from '../../components/FingerSelector';
 
+declare var Module: {
+  _optimize_keyboard_layout: (
+    text: string,
+    initialTemperature: number,
+    coolingRate: number,
+    iterations: number,
+    numRestarts: number,
+    distanceWeight: number,
+    handBalanceWeight: number,
+    sameFingerWeight: number,
+    layoutData: string,
+    fingerAssignmentsData: string
+  ) => any;  // Adjust the return type accordingly
+  onRuntimeInitialized: () => void;
+};
+
 const KeyboardPage: React.FC = () => {
   const qwertyLayout: Layout = {
     Q: [0, 1],
@@ -69,22 +85,31 @@ const KeyboardPage: React.FC = () => {
   );
 
   useEffect(() => {
-    const worker = new Worker(
-      new URL('/optimizeWorker.js', window.location.origin)
-    );
+    // Load the Emscripten-generated JavaScript file
+    const loadWasm = async () => {
+      const script = document.createElement('script');
+      script.src = new URL('optimize.js', window.location.origin).toString();
+      script.async = true;
+      document.body.appendChild(script);
 
-    workerRef.current = worker;
-    workerRef.current.onmessage = (e: MessageEvent) => {
-      const { type, bestLayout, bestMetric, iterationsCompleted } = e.data;
-      setOptimizedLayout(bestLayout);
-      setBestMetricOverall(bestMetric);
-      setIterationCount(iterationsCompleted);
+      script.onload = () => {
+        console.log('WASM Module initialized via Emscripten');
+
+        // At this point, `Module` should be available globally
+        Module.onRuntimeInitialized = () => {
+          console.log('Emscripten WASM Module is ready to use');
+          // You can call functions here or save the module to state
+        };
+      };
+
+      script.onerror = () => {
+        console.error('Failed to load the Emscripten JavaScript file');
+      };
     };
 
-    return () => {
-      workerRef.current?.terminate();
-    };
-  }, []);
+    loadWasm();
+  }, []);;;
+
 
   const handleChangeText = (
     event: React.ChangeEvent<HTMLTextAreaElement>
@@ -93,48 +118,86 @@ const KeyboardPage: React.FC = () => {
     setText(newText);
     const lastChar = newText.slice(-1).toUpperCase();
     setHighlightedKeys(new Set([lastChar]));
-    setTimeout(() => setHighlightedKeys(new Set()), 200);
+    setTimeout(() => {
+      console.log('Clearing highlighted keys');
+      setHighlightedKeys(new Set());
+    }, 200);
   };
 
   const handleFingerAssign = (key: string, finger: string) => {
-    setFingerAssignments((prev) => ({ ...prev, [key]: finger }));
+    setFingerAssignments((prev) => {
+      const newAssignments = { ...prev, [key]: finger };
+      return newAssignments;
+    });
   };
+  const handleOptimize = async (): Promise<void> => {
+    console.log('Starting optimization');
 
-  const handleOptimize = (): void => {
-    setIterationCount(0);
-    workerRef.current?.postMessage({
-      layout: { ...layout, ' ': [3, 5] }, // Add spacebar to layout
+    // Load WASM module if not loaded in useEffect
+    const response = await fetch('/optimize.wasm');
+    const buffer = await response.arrayBuffer();
+    const wasmModule = await WebAssembly.instantiate(buffer, {});
+
+    console.log('WASM Module loaded:', wasmModule.instance);
+
+    const {
+      exports: { optimize_keyboard_layout },
+    } = wasmModule.instance;
+
+    // Convert layout and fingerAssignments to JSON strings
+    const layoutData = JSON.stringify({ ...layout, ' ': [3, 5] });
+    const fingerAssignmentsData = JSON.stringify({
+      ...fingerAssignments,
+      ' ': 'Right Thumb',
+    });
+
+    // Call the WASM optimization function
+    const result = Module._optimize_keyboard_layout(
       text,
       initialTemperature,
       coolingRate,
       iterations,
       numRestarts,
-      weights: {
-        distance: distanceWeight,
-        handBalance: handBalanceWeight,
-        sameFinger: sameFingerWeight,
-      },
-      fingerAssignments: { ...fingerAssignments, ' ': 'Right Thumb' }, // Add spacebar to finger assignments
+      distanceWeight,
+      handBalanceWeight,
+      sameFingerWeight,
+      layoutData,
+      fingerAssignmentsData
+    );
+
+    // Process the result and update state
+    // Assuming `optimize_keyboard_layout` returns the optimized layout and metrics
+    setOptimizedLayout(result.bestLayout);
+    setBestMetricOverall(result.bestMetric);
+    setIterationCount(result.iterationsCompleted);
+
+    console.log('Updated state after WASM optimization:', {
+      optimizedLayout: result.bestLayout,
+      bestMetricOverall: result.bestMetric,
+      iterationCount: result.iterationsCompleted,
     });
   };
 
+
   const layoutToString = (layout: Layout): string => {
     const keys = Object.keys(layout)
-      .filter((key) => key !== ' ') // Exclude spacebar from sorting
+      .filter((key) => key !== ' ')
       .sort((a, b) => {
         const [rowA, colA] = layout[a];
         const [rowB, colB] = layout[b];
         return rowA !== rowB ? rowA - rowB : colA - colB;
       });
-    return keys.map((key) => key.toUpperCase()).join('');
+    const result = keys.map((key) => key.toUpperCase()).join('');
+    return result;
   };
 
-  // New function to ensure the layout is valid
   const ensureValidLayout = (layout: Layout | null): Layout => {
-    if (!layout) return qwertyLayout;
+    if (!layout) {
+      return qwertyLayout;
+    }
     const validLayout = { ...layout };
     if (!validLayout[' ']) {
-      validLayout[' '] = [3, 5]; // Add spacebar if it's missing
+      validLayout[' '] = [3, 5];
     }
     return validLayout;
   };
@@ -162,23 +225,31 @@ const KeyboardPage: React.FC = () => {
           <NumberInput
             label='Initial Temperature'
             value={initialTemperature}
-            onChange={(value) => setInitialTemperature(Number(value))}
+            onChange={(value) => {
+              setInitialTemperature(Number(value));
+            }}
           />
           <NumberInput
             label='Cooling Rate'
             value={coolingRate}
-            onChange={(value) => setCoolingRate(Number(value))}
+            onChange={(value) => {
+              setCoolingRate(Number(value));
+            }}
             step={0.0001}
           />
           <NumberInput
             label='Iterations'
             value={iterations}
-            onChange={(value) => setIterations(Number(value))}
+            onChange={(value) => {
+              setIterations(Number(value));
+            }}
           />
           <NumberInput
             label='Number of Restarts'
             value={numRestarts}
-            onChange={(value) => setNumRestarts(Number(value))}
+            onChange={(value) => {
+              setNumRestarts(Number(value));
+            }}
           />
         </Grid.Col>
         <Grid.Col span={6}>
@@ -186,19 +257,25 @@ const KeyboardPage: React.FC = () => {
           <NumberInput
             label='Distance Traveled'
             value={distanceWeight}
-            onChange={(value) => setDistanceWeight(Number(value))}
+            onChange={(value) => {
+              setDistanceWeight(Number(value));
+            }}
             step={0.1}
           />
           <NumberInput
             label='Hand Balance'
             value={handBalanceWeight}
-            onChange={(value) => setHandBalanceWeight(Number(value))}
+            onChange={(value) => {
+              setHandBalanceWeight(Number(value));
+            }}
             step={0.1}
           />
           <NumberInput
             label='Same Finger Strokes'
             value={sameFingerWeight}
-            onChange={(value) => setSameFingerWeight(Number(value))}
+            onChange={(value) => {
+              setSameFingerWeight(Number(value));
+            }}
             step={0.1}
           />
         </Grid.Col>

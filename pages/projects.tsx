@@ -5,6 +5,9 @@ const ProjectsPage: React.FC = () => {
   return (
     <div>
       <p>
+        <Link href='/projects/poker-quiz'>Poker Decision Quiz</Link>
+      </p>
+      <p>
         <Link href='/projects/keyboard'>Keyboard (WIP)</Link>
       </p>
       <p>

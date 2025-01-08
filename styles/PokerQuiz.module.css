@@ -1,0 +1,117 @@
+.pokerTable {
+  position: relative;
+  width: 600px;
+  height: 400px;
+  margin: 2rem auto;
+  background: #35654d;
+  border-radius: 300px / 200px;
+  border: 15px solid #4a4a4a;
+}
+
+.dealerButton {
+  position: absolute;
+  left: 50%;
+  top: 0%;
+  transform: translate(-50%, 0%);
+  background: #ffffff;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  border: 2px solid #4a4a4a;
+  z-index: 2;
+}
+
+.positionMarker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.positionButton {
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.userPosition {
+  background: #fa5252;
+  color: #fff;
+  border: 2px solid #c92a2a;
+}
+
+.activePosition {
+  background: #ffd43b;
+  color: #000;
+}
+
+.inactivePosition {
+  background: #868e96;
+  color: #fff;
+}
+
+.positionTooltip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  margin-top: 0.5rem;
+  z-index: 3;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.card {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 4rem;
+  margin: 0 0.25rem;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+}
+
+.cardRank {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.cardSuit {
+  font-size: 1.5rem;
+}
+
+.redCard {
+  color: #e03131;
+}
+
+.blackCard {
+  color: #000000;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.default {
+  cursor: default;
+}
