@@ -28,6 +28,12 @@
   z-index: 2;
 }
 
+:global(.dark) .dealerButton {
+  background: #2c2e33;
+  color: #ffffff;
+  border-color: #666;
+}
+
 .positionMarker {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -91,13 +97,27 @@
   border: 2px solid #e9ecef;
 }
 
+:global(.dark) .card {
+  background: #2c2e33;
+  color: #ffffff;
+  border-color: #666;
+}
+
 .cardRank {
   font-size: 1rem;
   font-weight: bold;
 }
 
+:global(.dark) .cardRank {
+  color: #ffffff;
+}
+
 .cardSuit {
   font-size: 1.5rem;
+}
+
+:global(.dark) .cardSuit {
+  color: #ffffff;
 }
 
 .redCard {
@@ -114,4 +134,44 @@
 
 .default {
   cursor: default;
+}
+
+.container.dark {
+  color: white;
+}
+
+.dark .dealerButton {
+  background: #2c2e33;
+  color: #ffffff;
+  border-color: #666;
+}
+
+.dark .positionButton {
+  background: #373737;
+  color: white;
+}
+
+.dark .userPosition {
+  background: #fa5252;
+  color: white;
+}
+
+.dark .activePosition {
+  background: #666;
+  color: white;
+}
+
+.dark .card {
+  background: #373737;
+  color: white;
+  border-color: #666;
+}
+
+.dark .explanation {
+  color: #e0e0e0;
+}
+
+.dark :global(.mantine-Paper-root) {
+  background-color: #25262B;
+  border-color: #373A40;
 }

@@ -4,6 +4,7 @@ import { Container, Title, Paper, Text, Button, Stack, Group, Grid, Timeline, Th
 import { IconCards, IconCoin, IconBulb } from '@tabler/icons-react';
 import styles from '../../styles/PokerQuiz.module.css';
 import scenarios from './poker_scenario.json';
+import { useAppState } from '../../context/AppContext';
 
 interface Choice {
   choice_text: string;
@@ -59,6 +60,7 @@ interface ScenarioData {
 
 
 const PokerQuiz: React.FC = () => {
+  const { theme } = useAppState();
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [hintIndex, setHintIndex] = useState(-1);
@@ -271,7 +273,7 @@ const PokerQuiz: React.FC = () => {
   };
 
   return (
-    <Container size="xl">
+    <Container size="lg" className={`${styles.container} ${theme === 'dark' ? styles.dark : ''}`}>
       <Head>
         <title>Poker Decision Quiz</title>
       </Head>
