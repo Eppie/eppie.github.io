@@ -19,14 +19,14 @@ const HomePage: React.FC = () => {
             learning React and TypeScript, and working to understand large
             language models and how to use them productively.
           </p>
-          <p>
+          {/* <p>
             I&apos;m currently looking for a new role, so if you have any
             openings or know anyone who does, feel free to reach out:{' '}
             <a href='mailto:andrewepstein.2024@gmail.com'>
               andrewepstein.2024@gmail.com
             </a>
             .
-          </p>
+          </p> */}
         </div>
       </div>
     </div>

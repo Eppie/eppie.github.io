@@ -1,5 +1,110 @@
 [
     {
+        "scenario_id": 7,
+        "game_type": "NLHE 6-Max MTT",
+        "tournament_stage": "Late",
+        "blinds": "1000/2000",
+        "ante": "0.25",
+        "effective_stacks": 50000,
+        "effective_stacks_bb": 25,
+        "your_position": "BTN",
+        "your_hand": "QhJd",
+        "opponent_information": "The player in the SB is a tight-passive (nit) player.",
+        "current_state": "turn",
+        "community_cards":
+        {
+            "flop":
+            {
+                "cards":
+                [
+                    "Js",
+                    "8h",
+                    "5d"
+                ],
+                "actions":
+                [
+                    {
+                        "position": "UTG",
+                        "action": "Fold",
+                        "pot_size": 7500
+                    },
+                    {
+                        "position": "MP",
+                        "action": "Fold",
+                        "pot_size": 7500
+                    },
+                    {
+                        "position": "CO",
+                        "action": "Fold",
+                        "pot_size": 7500
+                    },
+                    {
+                        "position": "BTN",
+                        "action": "5000",
+                        "pot_size": 7500
+                    },
+                    {
+                        "position": "SB",
+                        "action": "Call",
+                        "pot_size": 12500
+                    },
+                    {
+                        "position": "BB",
+                        "action": "Fold",
+                        "pot_size": 17500
+                    }
+                ]
+            },
+            "turn":
+            {
+                "cards":
+                [
+                    "Js",
+                    "8h",
+                    "5d",
+                    "2c"
+                ],
+                "actions":
+                [
+                    {
+                        "position": "SB",
+                        "action": "Check",
+                        "pot_size": 17500
+                    }
+                ]
+            }
+        },
+        "considerations":
+        [
+            "Hand strength (top pair)",
+            "Position (in position)",
+            "Opponent tendencies (nits check their weak hands and some of their strong hands to protect their checking range)"
+        ],
+        "choices":
+        [
+            {
+                "choice_text": "Check",
+                "explanation": "Checking behind with top pair would be a mistake. Your hand is likely the best hand, and you should be looking to extract value from your opponent. Checking allows them to see a free river card.",
+                "is_correct": false
+            },
+            {
+                "choice_text": "Bet 4000",
+                "explanation": "This bet size is too small. It doesn't put enough pressure on your opponent and doesn't extract enough value from your strong hand. With a pot size of 17,500, you should be betting larger.",
+                "is_correct": false
+            },
+            {
+                "choice_text": "Bet 8750",
+                "explanation": "This is the correct choice. Betting around half the pot is a good size in this situation. It puts pressure on your opponent and builds the pot for a potential river bet. Against a nit, this bet is likely to get called by worse hands.",
+                "is_correct": true
+            },
+            {
+                "choice_text": "Bet 17500",
+                "explanation": "While betting is correct, this bet size is too large. A pot-sized bet is likely to scare away your opponent, especially a nit. A smaller bet is more likely to get called and extract value.",
+                "is_correct": false
+            }
+        ]
+    },
+    {
         "scenario_id": 1,
         "game_type": "NLHE 6-Max MTT",
         "tournament_stage": "Early",
@@ -335,111 +440,6 @@
             {
                 "choice_text": "Raise to 8000",
                 "explanation": "While raising is correct, this raise size is too large. It risks too much of your stack and may force your opponent to fold hands that you are beating. A standard raise of 3-4 times the initial bet is sufficient.",
-                "is_correct": false
-            }
-        ]
-    },
-    {
-        "scenario_id": 7,
-        "game_type": "NLHE 6-Max MTT",
-        "tournament_stage": "Late",
-        "blinds": "1000/2000",
-        "ante": "0.25",
-        "effective_stacks": 50000,
-        "effective_stacks_bb": 25,
-        "your_position": "BTN",
-        "your_hand": "QhJd",
-        "opponent_information": "The player in the SB is a tight-passive (nit) player.",
-        "current_state": "turn",
-        "community_cards":
-        {
-            "flop":
-            {
-                "cards":
-                [
-                    "Js",
-                    "8h",
-                    "5d"
-                ],
-                "actions":
-                [
-                    {
-                        "position": "UTG",
-                        "action": "Fold",
-                        "pot_size": 7500
-                    },
-                    {
-                        "position": "MP",
-                        "action": "Fold",
-                        "pot_size": 7500
-                    },
-                    {
-                        "position": "CO",
-                        "action": "Fold",
-                        "pot_size": 7500
-                    },
-                    {
-                        "position": "BTN",
-                        "action": "5000",
-                        "pot_size": 7500
-                    },
-                    {
-                        "position": "SB",
-                        "action": "Call",
-                        "pot_size": 12500
-                    },
-                    {
-                        "position": "BB",
-                        "action": "Fold",
-                        "pot_size": 17500
-                    }
-                ]
-            },
-            "turn":
-            {
-                "cards":
-                [
-                    "Js",
-                    "8h",
-                    "5d",
-                    "2c"
-                ],
-                "actions":
-                [
-                    {
-                        "position": "SB",
-                        "action": "Check",
-                        "pot_size": 17500
-                    }
-                ]
-            }
-        },
-        "considerations":
-        [
-            "Hand strength (top pair)",
-            "Position (in position)",
-            "Opponent tendencies (nits check their weak hands and some of their strong hands to protect their checking range)"
-        ],
-        "choices":
-        [
-            {
-                "choice_text": "Check",
-                "explanation": "Checking behind with top pair would be a mistake. Your hand is likely the best hand, and you should be looking to extract value from your opponent. Checking allows them to see a free river card.",
-                "is_correct": false
-            },
-            {
-                "choice_text": "Bet 4000",
-                "explanation": "This bet size is too small. It doesn't put enough pressure on your opponent and doesn't extract enough value from your strong hand. With a pot size of 17,500, you should be betting larger.",
-                "is_correct": false
-            },
-            {
-                "choice_text": "Bet 8750",
-                "explanation": "This is the correct choice. Betting around half the pot is a good size in this situation. It puts pressure on your opponent and builds the pot for a potential river bet. Against a nit, this bet is likely to get called by worse hands.",
-                "is_correct": true
-            },
-            {
-                "choice_text": "Bet 17500",
-                "explanation": "While betting is correct, this bet size is too large. A pot-sized bet is likely to scare away your opponent, especially a nit. A smaller bet is more likely to get called and extract value.",
                 "is_correct": false
             }
         ]
