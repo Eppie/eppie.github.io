@@ -19,7 +19,10 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "public/optimizeWorker.js"
+    "public/optimizeWorker.js",
+    "public/optimize.js",
+    "public/optimize.wasm",
+    "public/poker_scenario.json"
   ],
   "exclude": ["node_modules"]
 }
