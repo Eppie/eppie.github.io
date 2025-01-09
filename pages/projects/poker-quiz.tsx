@@ -360,7 +360,7 @@ const PokerQuiz: React.FC = () => {
 
               <Paper p="md" radius="md" withBorder>
                 <Stack>
-                  <Group position="apart">
+                  <Group>
                     <Title order={2} size="h4">What would you do?</Title>
                     <Button 
                       variant="subtle"
